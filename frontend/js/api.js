@@ -16,7 +16,7 @@
     window.INSUREBOT_API_BASE ||
     (location.hostname === "localhost" || location.hostname === "127.0.0.1"
       ? "http://localhost:8000"
-      : "https://insurebot-backend.onrender.com");
+      : "https://insurebot-90.onrender.com");
 
   const TOKEN_KEY = "insurebot_token";
   const USER_KEY = "insurebot_user";
