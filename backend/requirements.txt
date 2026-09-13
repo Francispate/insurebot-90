@@ -15,3 +15,4 @@ google-genai==2.22.0
 groq==1.7.0
 requests==2.34.2
 PyMuPDF==1.28.2
+psycopg2-binary==2.9.10

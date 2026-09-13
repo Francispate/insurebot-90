@@ -22,14 +22,18 @@ async def get_stats(current_user: dict = Depends(require_admin)):
     try:
         db = get_db()
 
-        total_users = db.execute("SELECT COUNT(*) FROM users").fetchone()[0]
-        total_claims = db.execute("SELECT COUNT(*) FROM claims").fetchone()[0]
+        total_users = db.execute(
+            "SELECT COUNT(*) AS count FROM users"
+        ).fetchone()["count"]
+        total_claims = db.execute(
+            "SELECT COUNT(*) AS count FROM claims"
+        ).fetchone()["count"]
         pending = db.execute(
-            "SELECT COUNT(*) FROM claims WHERE status = 'pending'"
-        ).fetchone()[0]
+            "SELECT COUNT(*) AS count FROM claims WHERE status = 'pending'"
+        ).fetchone()["count"]
         high_risk = db.execute(
-            "SELECT COUNT(*) FROM claims WHERE fraud_risk_score >= 60"
-        ).fetchone()[0]
+            "SELECT COUNT(*) AS count FROM claims WHERE fraud_risk_score >= 60"
+        ).fetchone()["count"]
 
         # Claims by type
         claims_by_type_rows = db.execute("""
@@ -41,11 +45,11 @@ async def get_stats(current_user: dict = Depends(require_admin)):
 
         # Fraud distribution
         genuine = db.execute(
-            "SELECT COUNT(*) FROM claims WHERE fraud_label = 'genuine'"
-        ).fetchone()[0]
+            "SELECT COUNT(*) AS count FROM claims WHERE fraud_label = 'genuine'"
+        ).fetchone()["count"]
         fraud = db.execute(
-            "SELECT COUNT(*) FROM claims WHERE fraud_label = 'fraud'"
-        ).fetchone()[0]
+            "SELECT COUNT(*) AS count FROM claims WHERE fraud_label = 'fraud'"
+        ).fetchone()["count"]
 
         db.close()
 
@@ -100,7 +104,7 @@ async def update_user_role(
     try:
         db = get_db()
         db.execute(
-            "UPDATE users SET role = ? WHERE id = ?",
+            "UPDATE users SET role = %s WHERE id = %s",
             (role, user_id)
         )
         db.commit()

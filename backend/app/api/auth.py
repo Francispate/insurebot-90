@@ -24,22 +24,22 @@ class LoginRequest(BaseModel):
 
 @router.post("/register")
 async def register(req: RegisterRequest):
-    conn = get_db()
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
 
-    cur.execute("SELECT id FROM users WHERE email = ?", (req.email,))
+    cur.execute("SELECT id FROM users WHERE email = %s", (req.email,))
     if cur.fetchone():
-        conn.close()
+        db.close()
         raise HTTPException(status_code=400, detail="Email already registered")
 
     pw_hash = hash_password(req.password)
     cur.execute(
-        "INSERT INTO users (name, email, password_hash, country) VALUES (?, ?, ?, ?)",
+        "INSERT INTO users (name, email, password_hash, country) VALUES (%s, %s, %s, %s) RETURNING id",
         (req.name, req.email, pw_hash, req.country)
     )
-    conn.commit()
-    user_id = cur.lastrowid
-    conn.close()
+    user_id = cur.fetchone()["id"]
+    db.commit()
+    db.close()
 
     token = create_access_token({
         "sub": str(user_id),
@@ -60,12 +60,12 @@ async def register(req: RegisterRequest):
 
 @router.post("/login")
 async def login(req: LoginRequest):
-    conn = get_db()
-    cur = conn.cursor()
+    db = get_db()
+    cur = db.cursor()
 
-    cur.execute("SELECT * FROM users WHERE email = ?", (req.email,))
+    cur.execute("SELECT * FROM users WHERE email = %s", (req.email,))
     row = cur.fetchone()
-    conn.close()
+    db.close()
 
     if not row:
         raise HTTPException(status_code=401, detail="Invalid credentials")

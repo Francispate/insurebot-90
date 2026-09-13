@@ -68,14 +68,13 @@ async def analyze_policy(
         # Save to database
         db = get_db()
         db.execute("""
-            INSERT INTO policies (user_id, filename, summary, analysis_json, uploaded_at)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO policies (user_id, filename, summary, analysis_json)
+            VALUES (%s, %s, %s, %s)
         """, (
             current_user["id"],
             filename,
             summary,
-            analysis_json,
-            datetime.utcnow().isoformat()
+            analysis_json
         ))
         db.commit()
         db.close()
@@ -132,7 +131,7 @@ async def get_user_policies(current_user: dict = Depends(get_current_user)):
         policies = db.execute("""
             SELECT id, user_id, filename, summary, uploaded_at
             FROM policies
-            WHERE user_id = ?
+            WHERE user_id = %s
             ORDER BY uploaded_at DESC
         """, (current_user["id"],)).fetchall()
         db.close()

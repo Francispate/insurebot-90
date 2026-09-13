@@ -133,14 +133,15 @@ async def save_claim(
     """Save a claim to the database — auth required."""
     try:
         db = get_db()
-        db.execute("""
+        cur = db.execute("""
             INSERT INTO claims (
                 user_id, claim_type, description, incident_date, location,
                 amount_estimated, damage_severity, affected_parts,
                 fraud_risk_score, fraud_label,
                 settlement_predicted, settlement_confidence,
-                status, image_path, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                status, image_path
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
         """, (
             current_user["id"],
             claim.claim_type,
@@ -155,12 +156,10 @@ async def save_claim(
             claim.settlement_predicted,
             claim.settlement_confidence,
             "pending",
-            claim.image_path,
-            datetime.utcnow().isoformat()
+            claim.image_path
         ))
+        claim_id = cur.fetchone()["id"]
         db.commit()
-
-        claim_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
         db.close()
 
         return {"success": True, "claim_id": claim_id, "status": "pending"}
@@ -176,7 +175,7 @@ async def get_user_claims(current_user: dict = Depends(get_current_user)):
     try:
         db = get_db()
         claims = db.execute("""
-            SELECT * FROM claims WHERE user_id = ?
+            SELECT * FROM claims WHERE user_id = %s
             ORDER BY created_at DESC
         """, (current_user["id"],)).fetchall()
         db.close()
@@ -228,7 +227,7 @@ async def update_claim_status(
     try:
         db = get_db()
         db.execute(
-            "UPDATE claims SET status = ? WHERE id = ?",
+            "UPDATE claims SET status = %s WHERE id = %s",
             (status, claim_id)
         )
         db.commit()

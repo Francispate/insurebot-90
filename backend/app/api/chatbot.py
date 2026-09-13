@@ -46,32 +46,29 @@ async def send_message(
 
         # Save to database
         db = get_db()
-        now = datetime.utcnow().isoformat()
 
         # Save last user message
         if messages:
             last_user_msg = messages[-1]
             db.execute("""
-                INSERT INTO chat_history (user_id, session_id, role, content, created_at)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO chat_history (user_id, session_id, role, content)
+                VALUES (%s, %s, %s, %s)
             """, (
                 current_user["id"],
                 session_id,
                 last_user_msg["role"],
-                last_user_msg["content"],
-                now
+                last_user_msg["content"]
             ))
 
         # Save bot response
         db.execute("""
-            INSERT INTO chat_history (user_id, session_id, role, content, created_at)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO chat_history (user_id, session_id, role, content)
+            VALUES (%s, %s, %s, %s)
         """, (
             current_user["id"],
             session_id,
             "assistant",
-            bot_response,
-            now
+            bot_response
         ))
 
         db.commit()
@@ -100,14 +97,14 @@ async def get_chat_history(
         if session_id:
             history = db.execute("""
                 SELECT * FROM chat_history
-                WHERE user_id = ? AND session_id = ?
+                WHERE user_id = %s AND session_id = %s
                 ORDER BY created_at ASC
                 LIMIT 50
             """, (current_user["id"], session_id)).fetchall()
         else:
             history = db.execute("""
                 SELECT * FROM chat_history
-                WHERE user_id = ?
+                WHERE user_id = %s
                 ORDER BY created_at DESC
                 LIMIT 50
             """, (current_user["id"],)).fetchall()
