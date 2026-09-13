@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsureBot — Policy Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/chatbot-widget.css" />
+  <style>
+    /* ══════════════════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ══════════════════════════════════════════════════════
+       LIGHT THEME — warm sand (matches dashboard)
+    ══════════════════════════════════════════════════════ */
+    :root {
+      --bg-image:   url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=90&auto=format&fit=crop');
+      --bg-overlay: rgba(200,191,176,0.55);
+
+      --glass-bg:     rgba(255,255,255,0.22);
+      --glass-border: rgba(255,255,255,0.58);
+      --glass-shadow: rgba(100,80,60,0.18);
+      --glass-inset:  rgba(255,255,255,0.78);
+      --glass-inset2: rgba(255,255,255,0.18);
+
+      --text-primary:   #000000;
+      --text-secondary: rgba(0,0,0,0.70);
+      --text-muted:     rgba(0,0,0,0.45);
+
+      /* Darker green for light bg visibility */
+      --accent:        #1a9e56;
+      --accent-glow:   rgba(26,158,86,0.38);
+      --accent-dim:    rgba(26,158,86,0.13);
+      --accent-border: rgba(26,158,86,0.30);
+      --accent-text:   #ffffff;
+
+      --nav-bg:        rgba(255,255,255,0.28);
+      --nav-border:    rgba(255,255,255,0.55);
+
+      --card-bg:      rgba(255,255,255,0.22);
+      --card-border:  rgba(255,255,255,0.52);
+      --card-hover:   rgba(255,255,255,0.30);
+
+      --input-bg:      rgba(255,255,255,0.30);
+      --input-border:  rgba(255,255,255,0.65);
+      --input-color:   #000000;
+      --input-ph:      rgba(0,0,0,0.38);
+      --input-focus-border: rgba(26,158,86,0.55);
+      --input-focus-shadow: rgba(26,158,86,0.15);
+
+      --tab-bg:         rgba(255,255,255,0.25);
+      --tab-border:     rgba(255,255,255,0.50);
+      --tab-active-bg:  rgba(255,255,255,0.55);
+      --tab-active-color: #000000;
+      --tab-inactive-color: rgba(0,0,0,0.50);
+
+      --toggle-bg:     rgba(255,255,255,0.30);
+      --toggle-border: rgba(255,255,255,0.58);
+      --toggle-color:  rgba(0,0,0,0.75);
+
+      --row-divider:   rgba(0,0,0,0.08);
+      --footer-color:  rgba(0,0,0,0.45);
+      --footer-border: rgba(0,0,0,0.10);
+
+      --skeleton-a: rgba(255,255,255,0.22);
+      --skeleton-b: rgba(255,255,255,0.42);
+
+      --dropzone-border: rgba(0,0,0,0.18);
+      --hint-color:      rgba(0,0,0,0.42);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       DARK THEME — deep navy (matches dashboard)
+    ══════════════════════════════════════════════════════ */
+    [data-theme="dark"] {
+      --bg-image:   url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1920&q=90&auto=format&fit=crop');
+      --bg-overlay: rgba(4,8,20,0.72);
+
+      --glass-bg:     rgba(8,16,42,0.48);
+      --glass-border: rgba(120,160,255,0.16);
+      --glass-shadow: rgba(0,0,0,0.60);
+      --glass-inset:  rgba(255,255,255,0.07);
+      --glass-inset2: rgba(0,0,0,0.28);
+
+      --text-primary:   #ffffff;
+      --text-secondary: rgba(255,255,255,0.80);
+      --text-muted:     rgba(255,255,255,0.55);
+
+      /* Keep original bright green in dark mode */
+      --accent:        #3ddc84;
+      --accent-glow:   rgba(61,220,132,0.32);
+      --accent-dim:    rgba(61,220,132,0.10);
+      --accent-border: rgba(61,220,132,0.22);
+      --accent-text:   #0b1a12;
+
+      --nav-bg:        rgba(4,8,20,0.82);
+      --nav-border:    rgba(255,255,255,0.07);
+
+      --card-bg:      rgba(6,12,32,0.42);
+      --card-border:  rgba(110,155,255,0.13);
+      --card-hover:   rgba(255,255,255,0.07);
+
+      --input-bg:      rgba(255,255,255,0.07);
+      --input-border:  rgba(255,255,255,0.13);
+      --input-color:   #ffffff;
+      --input-ph:      rgba(255,255,255,0.38);
+      --input-focus-border: rgba(100,160,255,0.50);
+      --input-focus-shadow: rgba(67,108,220,0.15);
+
+      --tab-bg:         rgba(255,255,255,0.06);
+      --tab-border:     rgba(255,255,255,0.11);
+      --tab-active-bg:  rgba(67,108,220,0.22);
+      --tab-active-color: #ffffff;
+      --tab-inactive-color: rgba(255,255,255,0.55);
+
+      --toggle-bg:     rgba(255,255,255,0.08);
+      --toggle-border: rgba(255,255,255,0.13);
+      --toggle-color:  rgba(255,255,255,0.85);
+
+      --row-divider:   rgba(255,255,255,0.06);
+      --footer-color:  rgba(255,255,255,0.45);
+      --footer-border: rgba(255,255,255,0.05);
+
+      --skeleton-a: rgba(255,255,255,0.05);
+      --skeleton-b: rgba(255,255,255,0.10);
+
+      --dropzone-border: rgba(255,255,255,0.18);
+      --hint-color:      rgba(255,255,255,0.45);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       BACKGROUND — fixed image + overlay (like dashboard)
+    ══════════════════════════════════════════════════════ */
+    body {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      position: relative; overflow-x: hidden;
+      transition: color 0.35s;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: -2;
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(6px) brightness(1.05) saturate(1.1);
+      transform: scale(1.04);
+      transition: background-image 0.5s ease;
+    }
+    [data-theme="dark"] body::before {
+      filter: blur(6px) brightness(0.55) saturate(0.85);
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: -1;
+      background: var(--bg-overlay);
+      transition: background 0.4s ease;
+    }
+
+    /* Dark-only grid overlay */
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0; transition: opacity 0.4s;
+      background-image:
+        linear-gradient(rgba(100,150,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,150,255,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+    [data-theme="dark"] .grid-bg { opacity: 1; }
+
+    /* ══════════════════════════════════════════════════════
+       NAVBAR — glass
+    ══════════════════════════════════════════════════════ */
+    .navbar {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 62px;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-border);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      transition: background 0.35s, border-color 0.3s;
+    }
+    .navbar-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Sora', sans-serif; font-size: 1.08rem; font-weight: 700;
+      color: var(--text-primary); text-decoration: none; letter-spacing: -0.01em;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 3px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.3s;
+    }
+    [data-theme="dark"] .logo-mark {
+      background: linear-gradient(135deg, rgba(61,220,132,0.16), rgba(67,108,220,0.22));
+      border-color: rgba(61,220,132,0.26);
+    }
+    .navbar-links { display: flex; align-items: center; gap: 0.2rem; }
+    .navbar-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--text-secondary); text-decoration: none;
+      padding: 0.38rem 0.85rem; border-radius: 8px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .navbar-links a:hover { color: var(--text-primary); background: var(--card-hover); }
+    .navbar-actions { display: flex; align-items: center; gap: 0.65rem; }
+    .navbar-user { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
+    .navbar-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem; font-weight: 700; color: #fff;
+    }
+    #theme-toggle {
+      background: var(--toggle-bg);
+      border: 1px solid var(--toggle-border);
+      border-radius: 9px; padding: 6px 10px; cursor: pointer;
+      color: var(--toggle-color);
+      display: flex; align-items: center; gap: 5px;
+      backdrop-filter: blur(12px);
+      font-size: 0.76rem; font-weight: 600; font-family: 'Inter', sans-serif;
+      box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    #theme-toggle:hover { background: var(--card-hover); }
+    .logout-link {
+      font-size: 0.83rem; color: var(--text-muted);
+      background: none; border: none; cursor: pointer;
+      padding: 0; text-decoration: none; transition: color 0.15s;
+    }
+    .logout-link:hover { color: #ef4444; }
+
+    /* ══════════════════════════════════════════════════════
+       PAGE LAYOUT
+    ══════════════════════════════════════════════════════ */
+    .page-main {
+      flex: 1; position: relative; z-index: 1;
+      max-width: 900px; width: 100%;
+      margin: 0 auto; padding: 2.5rem 2rem 4rem;
+    }
+    .page-header { margin-bottom: 2rem; }
+    .page-header h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800;
+      margin-bottom: 0.3rem; letter-spacing: -0.025em;
+      color: var(--text-primary);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    [data-theme="dark"] .page-header h1 { text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+    .page-header p { font-size: 0.875rem; color: var(--text-secondary); }
+
+    /* ── Page-level tabs ── */
+    .page-tabs {
+      display: flex; gap: 4px; margin-bottom: 2rem;
+      background: var(--tab-bg);
+      border: 1px solid var(--tab-border);
+      border-radius: 12px; padding: 4px; width: fit-content;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+    }
+    .page-tab {
+      padding: 0.45rem 1.1rem; border-radius: 8px; border: none;
+      background: transparent; cursor: pointer;
+      font-size: 0.85rem; font-weight: 500; font-family: 'Inter', sans-serif;
+      color: var(--tab-inactive-color); transition: all 0.15s;
+    }
+    .page-tab.active {
+      background: var(--tab-active-bg);
+      color: var(--tab-active-color);
+      box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+    }
+    .page-tab:not(.active):hover { color: var(--text-primary); background: var(--card-hover); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Glass card ── */
+    .card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px; padding: 1.75rem;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow:
+        0 10px 40px var(--glass-shadow),
+        0 2px 8px rgba(0,0,0,0.08),
+        inset 0 1px 0 var(--glass-inset),
+        inset 0 -1px 0 var(--glass-inset2);
+      margin-bottom: 1.25rem;
+      transition: all 0.3s;
+    }
+    [data-theme="dark"] .card {
+      background: rgba(6,12,32,0.42);
+      border-color: rgba(110,155,255,0.13);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.025),
+        0 10px 44px rgba(0,0,0,0.60),
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        inset 0 -1px 0 rgba(0,0,0,0.28);
+    }
+    .card-title {
+      font-size: 0.875rem; font-weight: 700; margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text-primary); letter-spacing: -0.01em;
+    }
+    .card-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    /* ── Inner tabs (Upload / Paste) ── */
+    #policy-input-tabs {
+      display: flex; gap: 4px; margin-bottom: 1.25rem;
+      background: var(--tab-bg);
+      border: 1px solid var(--tab-border);
+      border-radius: 9px; padding: 3px; width: fit-content;
+      backdrop-filter: blur(10px);
+    }
+    #policy-input-tabs .tab {
+      padding: 0.35rem 0.9rem; border-radius: 6px; border: none;
+      background: transparent; cursor: pointer;
+      font-size: 0.82rem; font-weight: 500; font-family: 'Inter', sans-serif;
+      color: var(--tab-inactive-color); transition: all 0.15s;
+    }
+    #policy-input-tabs .tab.active {
+      background: var(--tab-active-bg);
+      color: var(--tab-active-color);
+      box-shadow: 0 2px 6px var(--glass-shadow);
+    }
+    #policy-input-tabs .tab:not(.active):hover { color: var(--text-primary); }
+
+    /* ── Dropzone ── */
+    .dropzone {
+      border: 2px dashed var(--dropzone-border); border-radius: 12px;
+      padding: 2rem 1.5rem; text-align: center; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s; position: relative;
+      background: rgba(255,255,255,0.05);
+    }
+    [data-theme="dark"] .dropzone { background: rgba(255,255,255,0.03); }
+    .dropzone:hover, .dropzone.dragging {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .dropzone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .dropzone-icon { font-size: 1.75rem; margin-bottom: 0.6rem; }
+    .dropzone-text { font-size: 0.875rem; font-weight: 500; margin-bottom: 4px; color: var(--text-primary); }
+    .dropzone-hint { font-size: 0.78rem; color: var(--hint-color); }
+    #policy-file-name { margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-secondary); text-align: center; }
+
+    /* ── Form fields ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 0.4rem; color: var(--text-secondary);
+      letter-spacing: 0.01em;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 0.68rem 0.95rem; border-radius: 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--input-color);
+      font-size: 0.875rem; font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 6px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--input-ph); }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 3px var(--input-focus-shadow), 0 2px 8px var(--glass-shadow);
+    }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    .form-group select { appearance: none; cursor: pointer; }
+    .form-group select option { background: #0d1830; color: #e0ecff; }
+    [data-theme="light"] .form-group select option { background: #f5f0e8; color: #1a1008; }
+
+    /* ── Primary button ── */
+    .btn-primary {
+      width: 100%; padding: 0.72rem; border-radius: 11px;
+      background: var(--accent); border: 1px solid var(--accent);
+      color: #ffffff; font-size: 0.92rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s; margin-top: 0.75rem;
+      box-shadow: 0 4px 18px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .btn-primary:hover {
+      opacity: 0.88; transform: translateY(-1px);
+      box-shadow: 0 8px 26px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.24);
+    }
+    .btn-primary:disabled { opacity: 0.50; cursor: not-allowed; transform: none; }
+    [data-theme="dark"] .btn-primary {
+      background: linear-gradient(135deg, rgba(67,108,220,0.55), rgba(80,50,200,0.50));
+      border-color: rgba(130,180,255,0.32);
+      box-shadow: 0 4px 20px rgba(67,108,220,0.48), inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+    [data-theme="dark"] .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(80,128,240,0.70), rgba(100,65,220,0.65));
+      box-shadow: 0 8px 30px rgba(67,108,220,0.62), inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    /* ── KV rows ── */
+    .kv-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 0.75rem; font-size: 0.83rem; padding: 0.5rem 0;
+      border-bottom: 1px solid var(--row-divider);
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-label { color: var(--text-muted); }
+    .kv-value { font-weight: 500; color: var(--text-primary); }
+    .kv-nested { padding-left: 1rem; }
+
+    .opaque-list {
+      list-style: disc; padding-left: 1.25rem; margin: 0.25rem 0;
+      font-size: 0.83rem; color: var(--text-secondary);
+    }
+    .opaque-list li { margin-bottom: 3px; }
+
+    .advice-block {
+      font-size: 0.875rem; line-height: 1.7;
+      color: var(--text-secondary);
+    }
+    .advice-heading {
+      color: var(--text-primary); font-weight: 700;
+      margin: 1rem 0 0.5rem; font-size: 0.95rem;
+    }
+    .advice-heading:first-child { margin-top: 0; }
+    .advice-para { margin-bottom: 0.75rem; }
+    .advice-list {
+      margin: 0 0 0.9rem 1.25rem; padding: 0;
+      display: flex; flex-direction: column; gap: 0.35rem;
+    }
+    .advice-list li { line-height: 1.6; }
+    .advice-table {
+      font-size: 0.8rem; margin: 0.5rem 0 1rem;
+    }
+    .advice-table th, .advice-table td {
+      vertical-align: top; padding: 0.55rem 0.75rem;
+    }
+    .advice-block strong { color: var(--text-primary); }
+    .advice-block a, .search-results-block a {
+      color: var(--accent); text-decoration: underline; text-underline-offset: 2px;
+      word-break: break-word;
+    }
+    .advice-block a:hover, .search-results-block a:hover { opacity: 0.8; }
+
+    /* ── Alerts ── */
+    .alert-info {
+      padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      color: var(--text-primary); margin-bottom: 0.75rem;
+    }
+    .alert-info em { opacity: 0.65; }
+    .alert-danger {
+      padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.22);
+      color: var(--text-primary);
+    }
+    .alert-danger a { color: var(--accent); text-decoration: none; }
+
+    /* ── Rating box: score + why explanation ── */
+    #policy-rating-box {
+      margin-bottom: 1rem; padding: 0.9rem 1rem;
+      border-radius: 12px; background: var(--card-bg); border: 1px solid var(--card-border);
+    }
+    .rating-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    .rating-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+    .rating-num { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+
+    .risk-bar {
+      height: 6px; border-radius: 3px; overflow: hidden;
+      background: rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"] .risk-bar { background: rgba(255,255,255,0.10); }
+    .risk-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+    .risk-bar-fill.low    { background: #22c55e; }
+    .risk-bar-fill.medium { background: #f59e0b; }
+    .risk-bar-fill.high   { background: #ef4444; }
+
+    .why-box {
+      margin-top: 0.65rem; padding: 0.7rem 0.85rem;
+      border-radius: 10px; font-size: 0.8rem; line-height: 1.5;
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      color: var(--text-secondary);
+    }
+    .why-box strong { color: var(--text-primary); }
+
+    /* ── Skeleton / Spinner ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--skeleton-a) 25%, var(--skeleton-b) 50%, var(--skeleton-a) 75%);
+      background-size: 200% 100%; animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .skeleton-table { height: 160px; border-radius: 10px; }
+
+    /* ── Analysis loading skeleton (shown while waiting on the API) ── */
+    .skel-line { height: 14px; border-radius: 6px; }
+    .skel-block { height: 12px; border-radius: 6px; margin-bottom: 0.6rem; }
+    .skel-block:last-child { margin-bottom: 0; }
+    .skel-section-title { width: 40%; height: 10px; margin-bottom: 1rem; }
+    .skel-note {
+      margin-top: 1rem; font-size: 0.78rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Policies table ── */
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    .data-table th {
+      text-align: left; padding: 0.6rem 0.75rem; font-weight: 600; font-size: 0.75rem;
+      color: var(--text-muted); border-bottom: 1px solid var(--row-divider);
+    }
+    .data-table td {
+      padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--row-divider); vertical-align: top;
+      color: var(--text-primary);
+    }
+    .policy-summary-cell { max-width: 300px; color: var(--text-secondary); font-size: 0.8rem; line-height: 1.5; }
+
+    /* ── Related info label ── */
+    .related-label {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted);
+      margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--row-divider);
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 1.5rem;
+      font-size: 0.75rem; color: var(--footer-color);
+      border-top: 1px solid var(--footer-border);
+    }
+
+    @media (max-width: 600px) {
+      .navbar-links { display: none; }
+      .page-main { padding: 1.5rem 1rem 3rem; }
+    }
+  </style>
+
+  <!-- Theme: set before paint to avoid flash -->
+  <script>
+    (function(){
+      var k = "insurebot_theme";
+      var saved = localStorage.getItem(k);
+      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var t = saved || (prefersDark ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+</head>
+<body data-requires-auth>
+
+  <div class="grid-bg"></div>
+
+  <!-- ── Navbar ── -->
+  <nav class="navbar">
+    <a href="dashboard.html" class="navbar-logo">
+      <span class="logo-mark">🛡</span>
+      InsureBot
+    </a>
+    <div class="navbar-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="claim.html">New Claim</a>
+      <a href="admin.html" data-admin-only hidden>Admin</a>
+    </div>
+    <div class="navbar-actions">
+      <button id="theme-toggle" aria-label="Toggle theme"><span id="theme-icon">🌙</span><span id="theme-label">Dark</span></button>
+      <div class="navbar-user" data-auth-user hidden>
+        <div class="navbar-avatar" data-auth-initial></div>
+        <span data-auth-name style="font-size:0.875rem"></span>
+      </div>
+      <button class="logout-link" data-auth-logout hidden>Log out</button>
+      <a href="login.html" data-auth-guest style="padding:0.4rem 0.9rem;border-radius:8px;border:1px solid var(--glass-border);text-decoration:none;font-size:0.875rem;color:var(--text-primary);backdrop-filter:blur(10px)">Log in</a>
+    </div>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main class="page-main">
+
+    <div class="page-header">
+      <h1>Policies</h1>
+      <p>Analyze your policy PDF, get pre-claim advice, or review past analyses.</p>
+    </div>
+
+    <!-- Page-level tabs -->
+    <div class="page-tabs">
+      <button class="page-tab active" data-page-tab="analyzer-panel">Analyze Policy</button>
+      <button class="page-tab" data-page-tab="advisor-panel">Pre-Claim Advisor</button>
+      <button class="page-tab" data-page-tab="my-policies-panel">My Policies</button>
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- TAB 1: Policy Analyzer                     -->
+    <!-- ────────────────────────────────────────── -->
+    <div id="analyzer-panel" class="tab-panel active">
+
+      <div class="card">
+        <div class="card-title">
+          <span class="card-icon" style="background:rgba(245,158,11,0.15);">📄</span>
+          Analyze Your Policy
+        </div>
+
+        <!-- Input type tabs -->
+        <div class="tabs" id="policy-input-tabs">
+          <button class="tab active" data-tab="file-tab">Upload PDF</button>
+          <button class="tab" data-tab="text-tab">Paste Text</button>
+        </div>
+
+        <!-- File upload panel -->
+        <div id="file-tab" class="tab-panel active">
+          <form id="policy-file-form">
+            <div class="dropzone" id="policy-dropzone">
+              <input type="file" id="policy-file" accept=".pdf,.txt" aria-label="Select policy PDF" />
+              <div class="dropzone-icon">📑</div>
+              <div class="dropzone-text">Drop your policy PDF here or click to browse</div>
+              <div class="dropzone-hint">PDF or TXT · max 20 MB</div>
+            </div>
+            <div id="policy-file-name"></div>
+            <button type="submit" id="policy-file-submit" class="btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Analyze PDF
+            </button>
+          </form>
+        </div>
+
+        <!-- Text paste panel -->
+        <div id="text-tab" class="tab-panel" hidden>
+          <form id="policy-text-form">
+            <div class="form-group" style="margin-bottom:0">
+              <label for="policy-text-input">Paste your policy text</label>
+              <textarea id="policy-text-input" rows="9"
+                        placeholder="Paste the policy terms and conditions here…"
+                        required></textarea>
+            </div>
+            <button type="submit" id="policy-text-submit" class="btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Analyze Text
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading skeleton (shown while the policy is being analyzed) -->
+      <section id="policy-loading" class="card" hidden>
+        <div class="card-title">
+          <span class="card-icon" style="background:rgba(99,102,241,0.15);">⏳</span>
+          Analyzing your policy…
+        </div>
+        <div class="skeleton skel-block" style="width:95%"></div>
+        <div class="skeleton skel-block" style="width:88%"></div>
+        <div class="skeleton skel-block" style="width:70%"></div>
+
+        <div class="skeleton skel-section-title" style="margin-top:1.5rem"></div>
+        <div class="skeleton skel-block" style="width:80%"></div>
+        <div class="skeleton skel-block" style="width:65%"></div>
+        <div class="skeleton skel-block" style="width:75%"></div>
+
+        <div class="skeleton skel-section-title" style="margin-top:1.5rem"></div>
+        <div class="skeleton skel-block" style="width:60%"></div>
+        <div class="skeleton skel-block" style="width:90%"></div>
+
+        <div class="skel-note">
+          <span class="spinner" style="border-color:rgba(120,120,120,0.25);border-top-color:var(--accent)"></span>
+          Reading and analyzing your document — this can take a bit longer on first load while the server wakes up.
+        </div>
+      </section>
+
+      <!-- Results (hidden until analysis done) -->
+      <section id="policy-results" class="card" hidden>
+        <div class="card-title">
+          <span class="card-icon" style="background:rgba(16,185,129,0.15);">✅</span>
+          Policy Analysis
+        </div>
+        <div id="policy-summary-text"></div>
+        <div id="policy-rating-box" hidden></div>
+        <div id="policy-extra-fields" style="margin-top:0.75rem"></div>
+      </section>
+
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- TAB 2: Pre-Claim Advisor                   -->
+    <!-- ────────────────────────────────────────── -->
+    <div id="advisor-panel" class="tab-panel">
+
+      <div class="card">
+        <div class="card-title">
+          <span class="card-icon" style="background:rgba(99,102,241,0.15);">🧭</span>
+          Pre-Claim Advisor
+        </div>
+        <p style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:1.25rem;line-height:1.6">
+          Before filing a claim, describe what happened. Our AI will assess claimability, list documents you'll need, and flag rejection risks.
+        </p>
+
+        <form id="advice-form">
+          <div class="form-group">
+            <label for="advice-claim-type">Claim type</label>
+            <select id="advice-claim-type">
+              <option value="car">Car Insurance</option>
+              <option value="house">Home Insurance</option>
+              <option value="health">Health Insurance</option>
+              <option value="life">Life Insurance</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="advice-description">What happened? <span style="color:#ef4444">*</span></label>
+            <textarea id="advice-description" rows="5"
+                      placeholder="Describe the incident in as much detail as possible…"
+                      required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="advice-policy-details">Relevant policy details (optional)</label>
+            <textarea id="advice-policy-details" rows="3"
+                      placeholder="e.g. policy number, sum insured, any relevant clause you recall…"></textarea>
+          </div>
+
+          <button type="submit" id="advice-submit" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Get Advice
+          </button>
+        </form>
+      </div>
+
+      <!-- Loading skeleton (shown while advice is being generated) -->
+      <section id="advice-loading" class="card" hidden>
+        <div class="card-title">
+          <span class="card-icon" style="background:rgba(34,211,238,0.15);">⏳</span>
+          Getting advice…
+        </div>
+        <div class="skeleton skel-block" style="width:92%"></div>
+        <div class="skeleton skel-block" style="width:85%"></div>
+        <div class="skeleton skel-block" style="width:78%"></div>
+        <div class="skeleton skel-block" style="width:60%"></div>
+        <div class="skel-note">
+          <span class="spinner" style="border-color:rgba(120,120,120,0.25);border-top-color:var(--accent)"></span>
+          Consulting the AI advisor and checking related sources — this may take a moment.
+        </div>
+      </section>
+
+      <!-- Advice results -->
+      <section id="advice-results" class="card" hidden>
+        <div class="card-title">
+          <span class="card-icon" style="background:rgba(34,211,238,0.15);">💡</span>
+          AI Advice
+        </div>
+        <div id="advice-content" style="margin-bottom:1.25rem"></div>
+
+        <div id="advice-search-results-wrap" style="display:none">
+          <div class="related-label">
+            Related information
+          </div>
+          <div id="advice-search-results"></div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ────────────────────────────────────────── -->
+    <!-- TAB 3: My Policies                         -->
+    <!-- ────────────────────────────────────────── -->
+    <div id="my-policies-panel" class="tab-panel">
+      <div id="my-policies-container">
+        <div class="skeleton skeleton-table"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>© 2026 InsureBot · Orbyxa</footer>
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/policies.js"></script>
+  <script src="js/chatbot-widget.js"></script>
+  <script>
+    // ── Page-level tab switcher ──
+    document.querySelectorAll("[data-page-tab]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.pageTab;
+        document.querySelectorAll("[data-page-tab]").forEach(b =>
+          b.classList.toggle("active", b === btn)
+        );
+        document.querySelectorAll(".tab-panel[id$='-panel']").forEach(p =>
+          p.classList.toggle("active", p.id === target)
+        );
+      });
+    });
+
+    // ── Drag-and-drop for policy PDF ──
+    const pz = document.getElementById("policy-dropzone");
+    if (pz) {
+      ["dragenter","dragover"].forEach(ev =>
+        pz.addEventListener(ev, e => { e.preventDefault(); pz.classList.add("dragging"); })
+      );
+      ["dragleave","drop"].forEach(ev =>
+        pz.addEventListener(ev, e => { e.preventDefault(); pz.classList.remove("dragging"); })
+      );
+      pz.addEventListener("drop", e => {
+        const file = e.dataTransfer?.files?.[0];
+        if (!file) return;
+        const input = document.getElementById("policy-file");
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        input.dispatchEvent(new Event("change"));
+      });
+    }
+
+    // ── Show filename on file select ──
+    document.getElementById("policy-file")?.addEventListener("change", function () {
+      const nameEl = document.getElementById("policy-file-name");
+      if (nameEl && this.files?.[0]) {
+        nameEl.textContent = this.files[0].name;
+        nameEl.style.cssText = "margin-top:0.5rem;font-size:0.78rem;color:rgba(255,255,255,0.5);text-align:center";
+      }
+    });
+
+    // ── Show search results section only when there's content ──
+    const origAdvicePost = window.PoliciesUI?.initPolicyAdvice;
+    // Intercept advice-search-results rendering
+    const observer = new MutationObserver(() => {
+      const sr = document.getElementById("advice-search-results");
+      const wrap = document.getElementById("advice-search-results-wrap");
+      if (sr && wrap) {
+        wrap.style.display = sr.textContent?.trim()?.length ? "block" : "none";
+      }
+    });
+    const srEl = document.getElementById("advice-search-results");
+    if (srEl) observer.observe(srEl, { childList: true, subtree: true, characterData: true });
+  </script>
+
+  <script>
+    // ── Theme toggle wiring (after DOM ready) ──
+    (function(){
+      var THEME_KEY = "insurebot_theme";
+      var html = document.documentElement;
+      var btn   = document.getElementById("theme-toggle");
+      var icon  = document.getElementById("theme-icon");
+      var label = document.getElementById("theme-label");
+      function applyTheme(t) {
+        html.setAttribute("data-theme", t);
+        localStorage.setItem(THEME_KEY, t);
+        if (icon)  icon.textContent  = t === "dark" ? "☀️" : "🌙";
+        if (label) label.textContent = t === "dark" ? "Light" : "Dark";
+      }
+      // Sync UI labels with current theme
+      applyTheme(html.getAttribute("data-theme") || "light");
+      if (btn) btn.addEventListener("click", function(){
+        applyTheme(html.getAttribute("data-theme") === "dark" ? "light" : "dark");
+      });
+    })();
+  </script>
+</body>
+</html>

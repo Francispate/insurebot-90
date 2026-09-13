@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsureBot — Submit Claim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/chatbot-widget.css" />
+  <style>
+    /* ══════════════════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ══════════════════════════════════════════════════════
+       LIGHT THEME — soft daylight courtroom / legal office
+       (bright natural light, marble/stone tones)
+    ══════════════════════════════════════════════════════ */
+    :root {
+      --bg-image:   url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=90&auto=format&fit=crop');
+      --bg-overlay: rgba(210,205,195,0.58);
+
+      --glass-bg:     rgba(255,255,255,0.22);
+      --glass-border: rgba(255,255,255,0.58);
+      --glass-shadow: rgba(100,80,60,0.18);
+      --glass-inset:  rgba(255,255,255,0.78);
+      --glass-inset2: rgba(255,255,255,0.18);
+
+      --text-primary:   #000000;
+      --text-secondary: rgba(0,0,0,0.70);
+      --text-muted:     rgba(0,0,0,0.45);
+
+      --accent:        #1a9e56;
+      --accent-glow:   rgba(26,158,86,0.38);
+      --accent-dim:    rgba(26,158,86,0.13);
+      --accent-border: rgba(26,158,86,0.30);
+      --accent-text:   #ffffff;
+
+      --nav-bg:        rgba(255,255,255,0.28);
+      --nav-border:    rgba(255,255,255,0.55);
+
+      --card-bg:      rgba(255,255,255,0.22);
+      --card-border:  rgba(255,255,255,0.52);
+      --card-hover:   rgba(255,255,255,0.30);
+
+      --input-bg:      rgba(255,255,255,0.30);
+      --input-border:  rgba(255,255,255,0.65);
+      --input-color:   #000000;
+      --input-ph:      rgba(0,0,0,0.35);
+      --input-focus-border: rgba(26,158,86,0.55);
+      --input-focus-shadow: rgba(26,158,86,0.15);
+
+      --tab-bg:              rgba(255,255,255,0.25);
+      --tab-border:          rgba(255,255,255,0.50);
+      --tab-active-bg:       rgba(255,255,255,0.55);
+      --tab-active-color:    #000000;
+      --tab-inactive-color:  rgba(0,0,0,0.50);
+
+      --toggle-bg:     rgba(255,255,255,0.30);
+      --toggle-border: rgba(255,255,255,0.58);
+      --toggle-color:  rgba(0,0,0,0.75);
+
+      --row-divider:   rgba(0,0,0,0.07);
+      --section-label: rgba(0,0,0,0.42);
+      --footer-color:  rgba(0,0,0,0.42);
+      --footer-border: rgba(0,0,0,0.10);
+
+      --skeleton-a: rgba(255,255,255,0.22);
+      --skeleton-b: rgba(255,255,255,0.42);
+
+      --dropzone-border: rgba(0,0,0,0.16);
+      --hint-color:      rgba(0,0,0,0.40);
+      --risk-bar-bg:     rgba(0,0,0,0.08);
+
+      --btn-secondary-bg:     rgba(255,255,255,0.28);
+      --btn-secondary-border: rgba(255,255,255,0.55);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       DARK THEME — dramatic rainy night city
+       (deep charcoal, electric atmosphere)
+    ══════════════════════════════════════════════════════ */
+    [data-theme="dark"] {
+      --bg-image:   url('https://images.unsplash.com/photo-1519120944692-1a8d8cfc107f?w=1920&q=90&auto=format&fit=crop');
+      --bg-overlay: rgba(2,6,18,0.76);
+
+      --glass-bg:     rgba(8,16,42,0.48);
+      --glass-border: rgba(120,160,255,0.16);
+      --glass-shadow: rgba(0,0,0,0.60);
+      --glass-inset:  rgba(255,255,255,0.07);
+      --glass-inset2: rgba(0,0,0,0.28);
+
+      --text-primary:   #ffffff;
+      --text-secondary: rgba(255,255,255,0.80);
+      --text-muted:     rgba(255,255,255,0.55);
+
+      --accent:        #3ddc84;
+      --accent-glow:   rgba(61,220,132,0.32);
+      --accent-dim:    rgba(61,220,132,0.10);
+      --accent-border: rgba(61,220,132,0.22);
+      --accent-text:   #0b1a12;
+
+      --nav-bg:        rgba(2,6,18,0.84);
+      --nav-border:    rgba(255,255,255,0.07);
+
+      --card-bg:      rgba(6,12,32,0.44);
+      --card-border:  rgba(110,155,255,0.13);
+      --card-hover:   rgba(255,255,255,0.07);
+
+      --input-bg:      rgba(255,255,255,0.07);
+      --input-border:  rgba(255,255,255,0.13);
+      --input-color:   #ffffff;
+      --input-ph:      rgba(255,255,255,0.35);
+      --input-focus-border: rgba(100,160,255,0.50);
+      --input-focus-shadow: rgba(67,108,220,0.15);
+
+      --tab-bg:              rgba(255,255,255,0.06);
+      --tab-border:          rgba(255,255,255,0.11);
+      --tab-active-bg:       rgba(67,108,220,0.22);
+      --tab-active-color:    #ffffff;
+      --tab-inactive-color:  rgba(255,255,255,0.55);
+
+      --toggle-bg:     rgba(255,255,255,0.08);
+      --toggle-border: rgba(255,255,255,0.13);
+      --toggle-color:  rgba(255,255,255,0.85);
+
+      --row-divider:   rgba(255,255,255,0.06);
+      --section-label: rgba(255,255,255,0.42);
+      --footer-color:  rgba(255,255,255,0.40);
+      --footer-border: rgba(255,255,255,0.05);
+
+      --skeleton-a: rgba(255,255,255,0.05);
+      --skeleton-b: rgba(255,255,255,0.10);
+
+      --dropzone-border: rgba(255,255,255,0.18);
+      --hint-color:      rgba(255,255,255,0.42);
+      --risk-bar-bg:     rgba(255,255,255,0.10);
+
+      --btn-secondary-bg:     rgba(255,255,255,0.07);
+      --btn-secondary-border: rgba(255,255,255,0.13);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       BACKGROUND — fixed image + colour overlay
+    ══════════════════════════════════════════════════════ */
+    body {
+      min-height: 100vh; display: flex; flex-direction: column;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      position: relative; overflow-x: hidden;
+      transition: color 0.35s;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: -2;
+      background-image: var(--bg-image);
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      filter: blur(6px) brightness(1.05) saturate(1.1);
+      transform: scale(1.04);
+      transition: background-image 0.5s ease;
+    }
+    [data-theme="dark"] body::before {
+      filter: blur(6px) brightness(0.50) saturate(0.80);
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: -1;
+      background: var(--bg-overlay);
+      transition: background 0.4s ease;
+    }
+
+    /* Dark-only grid lines */
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0; transition: opacity 0.4s;
+      background-image:
+        linear-gradient(rgba(100,150,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,150,255,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+    [data-theme="dark"] .grid-bg { opacity: 1; }
+
+    /* ══════════════════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════════════════ */
+    .navbar {
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 62px;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-border);
+      backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+      transition: background 0.35s, border-color 0.3s;
+    }
+    .navbar-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Sora', sans-serif; font-size: 1.08rem; font-weight: 700;
+      color: var(--text-primary); text-decoration: none; letter-spacing: -0.01em;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 3px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.3s;
+    }
+    [data-theme="dark"] .logo-mark {
+      background: linear-gradient(135deg, rgba(61,220,132,0.16), rgba(67,108,220,0.22));
+      border-color: rgba(61,220,132,0.26);
+    }
+    .navbar-links { display: flex; align-items: center; gap: 0.2rem; }
+    .navbar-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--text-secondary); text-decoration: none;
+      padding: 0.38rem 0.85rem; border-radius: 8px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .navbar-links a:hover { color: var(--text-primary); background: var(--card-hover); }
+    .navbar-actions { display: flex; align-items: center; gap: 0.65rem; }
+    .navbar-user { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; }
+    .navbar-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem; font-weight: 700; color: #fff;
+    }
+    #theme-toggle {
+      background: var(--toggle-bg); border: 1px solid var(--toggle-border);
+      border-radius: 9px; padding: 6px 10px; cursor: pointer;
+      color: var(--toggle-color);
+      display: flex; align-items: center; gap: 5px;
+      backdrop-filter: blur(12px);
+      font-size: 0.76rem; font-weight: 600; font-family: 'Inter', sans-serif;
+      box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    #theme-toggle:hover { background: var(--card-hover); }
+    .logout-link {
+      font-size: 0.83rem; color: var(--text-muted);
+      background: none; border: none; cursor: pointer; padding: 0;
+      text-decoration: none; transition: color 0.15s;
+    }
+    .logout-link:hover { color: #ef4444; }
+    .btn-ghost {
+      padding: 0.4rem 0.9rem; border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      text-decoration: none; font-size: 0.875rem;
+      color: var(--text-primary);
+      background: var(--glass-bg); backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { background: var(--card-hover); }
+
+    /* ══════════════════════════════════════════════════════
+       PAGE LAYOUT
+    ══════════════════════════════════════════════════════ */
+    .page-main {
+      flex: 1; position: relative; z-index: 1;
+      max-width: 1400px; width: 100%;
+      margin: 0 auto; padding: 2.5rem 2rem 4rem;
+    }
+    .page-header { margin-bottom: 2rem; }
+    .page-header h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 1.9rem); font-weight: 800;
+      margin-bottom: 0.3rem; letter-spacing: -0.025em;
+      color: var(--text-primary);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    [data-theme="dark"] .page-header h1 { text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+    .page-header p { font-size: 0.875rem; color: var(--text-secondary); }
+
+    /* ── Page tabs ── */
+    .page-tabs {
+      display: flex; gap: 4px; margin-bottom: 2rem;
+      background: var(--tab-bg); border: 1px solid var(--tab-border);
+      border-radius: 12px; padding: 4px; width: fit-content;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+    }
+    .page-tab {
+      padding: 0.45rem 1.1rem; border-radius: 8px; border: none;
+      background: transparent; cursor: pointer;
+      font-size: 0.85rem; font-weight: 500; font-family: 'Inter', sans-serif;
+      color: var(--tab-inactive-color); transition: all 0.15s;
+    }
+    .page-tab.active {
+      background: var(--tab-active-bg); color: var(--tab-active-color);
+      box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+    }
+    .page-tab:not(.active):hover { color: var(--text-primary); background: var(--card-hover); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Single centered column: upload/form on top, results stacked below ── */
+    .claim-grid {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 1.5rem;
+    }
+    .claim-grid > div {
+      width: 100%; max-width: 980px;
+    }
+    /* Make the dropzone feel bigger/more prominent since it's now the focal point */
+    .claim-grid .dropzone { padding: 3rem 2rem; }
+    .claim-grid .dropzone-icon { font-size: 2.75rem; }
+    .claim-grid .dropzone-text { font-size: 1rem; }
+    .claim-grid #analyze-results,
+    .claim-grid #save-claim-form { max-width: 980px; }
+
+    /* ── "Why this score" explanation boxes ── */
+    .why-box {
+      margin-top: 0.75rem; padding: 0.75rem 0.9rem;
+      border-radius: 10px; font-size: 0.8rem; line-height: 1.5;
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      color: var(--text-secondary);
+    }
+    .why-box strong { color: var(--text-primary); }
+    .why-box ul { margin: 0.4rem 0 0 1.1rem; padding: 0; }
+    .why-box li { margin-bottom: 0.15rem; }
+
+    /* ── Glass card ── */
+    .card {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 20px; padding: 1.5rem;
+      backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+      box-shadow:
+        0 10px 40px var(--glass-shadow), 0 2px 8px rgba(0,0,0,0.08),
+        inset 0 1px 0 var(--glass-inset), inset 0 -1px 0 var(--glass-inset2);
+      transition: all 0.3s;
+    }
+    [data-theme="dark"] .card {
+      background: rgba(6,12,32,0.44); border-color: rgba(110,155,255,0.13);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.025), 0 10px 44px rgba(0,0,0,0.60),
+        inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.28);
+    }
+    .card-title {
+      font-size: 0.875rem; font-weight: 700; margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text-primary); letter-spacing: -0.01em;
+    }
+    .card-title .icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+
+    /* ── Dropzone ── */
+    .dropzone {
+      border: 2px dashed var(--dropzone-border); border-radius: 12px;
+      padding: 2rem 1.5rem; text-align: center; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative; overflow: hidden;
+      background: rgba(255,255,255,0.05);
+    }
+    [data-theme="dark"] .dropzone { background: rgba(255,255,255,0.03); }
+    .dropzone:hover, .dropzone.dragging {
+      border-color: var(--accent); background: var(--accent-dim);
+    }
+    .dropzone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .dropzone-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .dropzone-text { font-size: 0.875rem; font-weight: 500; margin-bottom: 4px; color: var(--text-primary); }
+    .dropzone-hint { font-size: 0.78rem; color: var(--hint-color); }
+    #claim-preview { margin-top: 1rem; display: none; border-radius: 10px; overflow: hidden; }
+    #claim-preview img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
+    #claim-file-name { margin-top: 0.5rem; font-size: 0.78rem; color: var(--text-secondary); text-align: center; }
+
+    /* ── Form controls ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      margin-bottom: 0.4rem; color: var(--text-secondary); letter-spacing: 0.01em;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 0.65rem 0.9rem; border-radius: 10px;
+      background: var(--input-bg); border: 1px solid var(--input-border);
+      color: var(--input-color); font-size: 0.875rem; font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 6px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--input-ph); }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none; border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 3px var(--input-focus-shadow), 0 2px 8px var(--glass-shadow);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-group select { appearance: none; cursor: pointer; }
+    .form-group select option { background: #0d1830; color: #e0ecff; }
+    [data-theme="light"] .form-group select option { background: #f5f0e8; color: #1a1008; }
+    .form-row { display: flex; gap: 0.75rem; }
+    .form-row .form-group { flex: 1; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%; padding: 0.72rem; border-radius: 11px;
+      background: var(--accent); border: 1px solid var(--accent);
+      color: #ffffff; font-size: 0.92rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s; margin-top: 0;
+      box-shadow: 0 4px 18px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .btn-primary:hover {
+      opacity: 0.88; transform: translateY(-1px);
+      box-shadow: 0 8px 26px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.24);
+    }
+    .btn-primary:disabled { opacity: 0.50; cursor: not-allowed; transform: none; }
+    [data-theme="dark"] .btn-primary {
+      background: linear-gradient(135deg, rgba(67,108,220,0.55), rgba(80,50,200,0.50));
+      border-color: rgba(130,180,255,0.32);
+      box-shadow: 0 4px 20px rgba(67,108,220,0.48), inset 0 1px 0 rgba(255,255,255,0.10);
+    }
+    [data-theme="dark"] .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(80,128,240,0.70), rgba(100,65,220,0.65));
+      box-shadow: 0 8px 30px rgba(67,108,220,0.62), inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+    .btn-secondary {
+      width: 100%; padding: 0.65rem; border-radius: 10px;
+      background: var(--btn-secondary-bg); border: 1px solid var(--btn-secondary-border);
+      color: var(--text-primary); font-size: 0.875rem; font-weight: 500;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      backdrop-filter: blur(10px); transition: all 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Result sections ── */
+    .result-section { margin-top: 1.25rem; }
+    .result-section-title {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--section-label);
+      margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--row-divider);
+    }
+    .kv-grid { display: grid; gap: 0.5rem; }
+    .kv-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 0.75rem; font-size: 0.83rem; padding: 0.45rem 0;
+      border-bottom: 1px solid var(--row-divider);
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-label { color: var(--text-muted); flex-shrink: 0; }
+    .kv-value { font-weight: 500; text-align: right; color: var(--text-primary); }
+
+    /* List-valued rows (arrays like Affected Parts, Rejection Risks) —
+       stack the label above the list instead of squeezing it right-aligned */
+    .kv-row-list {
+      flex-direction: column; align-items: stretch; gap: 0.35rem;
+    }
+    .kv-row-list .kv-value { text-align: left; }
+    .kv-list {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-direction: column; gap: 0.35rem;
+    }
+    .kv-list li {
+      font-weight: 400; font-size: 0.83rem; line-height: 1.4;
+      padding: 0.5rem 0.75rem; border-radius: 8px;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+    }
+
+    /* Risk bar */
+    .risk-bar {
+      height: 6px; border-radius: 3px;
+      background: var(--risk-bar-bg); overflow: hidden; margin-top: 4px;
+    }
+    .risk-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+    .risk-bar-fill.low    { background: #10b981; }
+    .risk-bar-fill.medium { background: #f59e0b; }
+    .risk-bar-fill.high   { background: #ef4444; }
+
+    /* Risk score label */
+    .risk-score-label { color: var(--text-muted); }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+    .badge-genuine    { background: rgba(16,185,129,0.18); color: #10b981; }
+    .badge-suspicious { background: rgba(245,158,11,0.18); color: #f59e0b; }
+    .badge-fraud      { background: rgba(239,68,68,0.18);  color: #ef4444; }
+    .badge-pending    { background: rgba(245,158,11,0.18); color: #f59e0b; }
+    .badge-approved   { background: rgba(16,185,129,0.18); color: #10b981; }
+    .badge-rejected   { background: rgba(239,68,68,0.18);  color: #ef4444; }
+    .badge-investigating { background: rgba(99,102,241,0.18); color: #a5b4fc; }
+
+    /* ── Alerts ── */
+    .alert-info {
+      padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      color: var(--text-primary);
+    }
+    .alert-danger {
+      padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.22);
+      color: var(--text-primary);
+    }
+    .alert-success {
+      padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.22);
+      color: var(--text-primary);
+    }
+
+    /* ── Skeleton / Spinner ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--skeleton-a) 25%, var(--skeleton-b) 50%, var(--skeleton-a) 75%);
+      background-size: 200% 100%; animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .skeleton-table { height: 160px; border-radius: 10px; }
+
+    /* ── Analysis loading skeleton (shown while waiting on the API) ── */
+    .skel-line { height: 14px; border-radius: 6px; margin-bottom: 0.9rem; }
+    .skel-line:last-child { margin-bottom: 0; }
+    .skel-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 0.45rem 0;
+    }
+    .skel-row .skel-line { margin-bottom: 0; }
+    .skel-label { width: 35%; }
+    .skel-val   { width: 40%; }
+    .skel-section-title { width: 45%; height: 10px; margin-bottom: 1rem; }
+    .skel-bar { height: 6px; border-radius: 3px; margin-top: 0.6rem; }
+    .skel-note {
+      margin-top: 1rem; font-size: 0.78rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .spinner {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── My Claims table ── */
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    .data-table th {
+      text-align: left; padding: 0.6rem 0.75rem; font-weight: 600;
+      font-size: 0.75rem; color: var(--text-muted);
+      border-bottom: 1px solid var(--row-divider);
+    }
+    .data-table td {
+      padding: 0.7rem 0.75rem; border-bottom: 1px solid var(--row-divider);
+      vertical-align: middle; color: var(--text-primary);
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 1.5rem;
+      font-size: 0.75rem; color: var(--footer-color);
+      border-top: 1px solid var(--footer-border);
+    }
+
+    @media (max-width: 600px) {
+      .navbar-links { display: none; }
+      .page-main { padding: 1.5rem 1rem 3rem; }
+    }
+  </style>
+
+  <!-- Theme: set before paint to prevent flash -->
+  <script>
+    (function(){
+      var k = "insurebot_theme";
+      var saved = localStorage.getItem(k);
+      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.setAttribute("data-theme", saved || (prefersDark ? "dark" : "light"));
+    })();
+  </script>
+</head>
+<body data-requires-auth>
+
+  <div class="grid-bg"></div>
+
+  <!-- ── Navbar ── -->
+  <nav class="navbar">
+    <a href="dashboard.html" class="navbar-logo">
+      <span class="logo-mark">🛡</span>
+      InsureBot
+    </a>
+    <div class="navbar-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="policy.html">Policies</a>
+      <a href="admin.html" data-admin-only hidden>Admin</a>
+    </div>
+    <div class="navbar-actions">
+      <button id="theme-toggle" aria-label="Toggle theme"><span id="theme-icon">🌙</span><span id="theme-label">Dark</span></button>
+      <div class="navbar-user" data-auth-user hidden>
+        <div class="navbar-avatar" data-auth-initial></div>
+        <span data-auth-name style="font-size:0.875rem"></span>
+      </div>
+      <button class="logout-link" data-auth-logout hidden>Log out</button>
+      <a href="login.html" class="btn-ghost" data-auth-guest>Log in</a>
+    </div>
+  </nav>
+
+  <!-- ── Page ── -->
+  <main class="page-main">
+
+    <div class="page-header">
+      <h1>Claims</h1>
+      <p>Upload a damage photo to analyze it, then save your claim.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="page-tabs">
+      <button class="page-tab active" data-tab="new-claim-panel">New Claim</button>
+      <button class="page-tab" data-tab="my-claims-panel">My Claims</button>
+    </div>
+
+    <!-- ── New Claim panel ── -->
+    <div id="new-claim-panel" class="tab-panel active">
+      <div class="claim-grid">
+
+        <!-- LEFT: Upload + form -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+          <!-- Image dropzone -->
+          <div class="card">
+            <div class="card-title">
+              <span class="icon" style="background:rgba(99,102,241,0.15);">📷</span>
+              Damage Photo
+            </div>
+
+            <div class="dropzone" id="dropzone">
+              <input type="file" id="claim-file" accept="image/*" aria-label="Select damage photo" />
+              <div class="dropzone-icon">🖼</div>
+              <div class="dropzone-text">Drop your photo here or click to browse</div>
+              <div class="dropzone-hint">JPG, PNG, WEBP · max 10 MB</div>
+            </div>
+            <div id="claim-preview">
+              <img id="claim-preview-img" src="" alt="Damage preview" />
+            </div>
+            <div id="claim-file-name"></div>
+          </div>
+
+          <!-- Analyze button (no form wrapper needed — JS reads the file input) -->
+          <form id="analyze-form">
+            <button type="submit" id="analyze-submit" class="btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Analyze Damage
+            </button>
+          </form>
+
+          <!-- Loading skeleton (shown while waiting on the analyze API) -->
+          <section id="analyze-loading" class="card" hidden>
+            <div class="card-title">
+              <span class="icon" style="background:rgba(99,102,241,0.15);">⏳</span>
+              Analyzing…
+            </div>
+
+            <div class="skeleton skel-section-title"></div>
+            <div class="skel-row">
+              <div class="skeleton skel-line skel-label"></div>
+              <div class="skeleton skel-line skel-val"></div>
+            </div>
+            <div class="skel-row">
+              <div class="skeleton skel-line skel-label"></div>
+              <div class="skeleton skel-line skel-val"></div>
+            </div>
+            <div class="skel-row">
+              <div class="skeleton skel-line skel-label"></div>
+              <div class="skeleton skel-line skel-val"></div>
+            </div>
+
+            <div class="skeleton skel-section-title" style="margin-top:1.5rem"></div>
+            <div class="skel-row">
+              <div class="skeleton skel-line skel-label"></div>
+              <div class="skeleton skel-line skel-val"></div>
+            </div>
+            <div class="skeleton skel-bar"></div>
+
+            <div class="skeleton skel-section-title" style="margin-top:1.5rem"></div>
+            <div class="skel-row">
+              <div class="skeleton skel-line skel-label"></div>
+              <div class="skeleton skel-line skel-val"></div>
+            </div>
+
+            <div class="skel-note">
+              <span class="spinner" style="border-color:rgba(120,120,120,0.25);border-top-color:var(--accent)"></span>
+              This can take a little longer on first load — the server may be waking up.
+            </div>
+          </section>
+
+        </div>
+
+        <!-- RIGHT: Results + save form -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+          <!-- Analysis results (hidden until analyzed) -->
+          <section id="analyze-results" class="card" hidden>
+            <div class="card-title">
+              <span class="icon" style="background:rgba(16,185,129,0.15);">✅</span>
+              Analysis Result
+            </div>
+
+            <!-- Vision -->
+            <div class="result-section">
+              <div class="result-section-title">Damage Assessment</div>
+              <div class="kv-grid">
+                <div class="kv-row">
+                  <span class="kv-label">Claim type</span>
+                  <span class="kv-value" id="result-claim-type">—</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-label">Severity</span>
+                  <span class="kv-value" id="result-severity">—</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-label">Estimated amount</span>
+                  <span class="kv-value" id="result-amount">—</span>
+                </div>
+              </div>
+              <div id="result-vision-extra" style="margin-top:0.5rem"></div>
+            </div>
+
+            <!-- Fraud -->
+            <div class="result-section" style="margin-top:1.25rem">
+              <div class="result-section-title">Fraud Check</div>
+              <div class="kv-row" style="border-bottom:none">
+                <span class="kv-label">Label</span>
+                <span class="kv-value" id="result-fraud-label">—</span>
+              </div>
+              <div style="margin-top:0.5rem">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;font-size:0.8rem">
+                  <span class="risk-score-label">Risk score</span>
+                  <span id="result-risk-score" style="font-weight:600">—</span>
+                </div>
+                <div class="risk-bar">
+                  <div id="result-risk-fill" class="risk-bar-fill low" style="width:0%"></div>
+                </div>
+              </div>
+              <div id="result-fraud-extra" style="margin-top:0.5rem"></div>
+              <div id="result-risk-why" class="why-box" hidden></div>
+            </div>
+
+            <!-- Settlement -->
+            <div class="result-section" style="margin-top:1.25rem">
+              <div class="result-section-title">Settlement Prediction</div>
+              <div class="kv-grid">
+                <div class="kv-row">
+                  <span class="kv-label">Prediction</span>
+                  <span class="kv-value" id="result-settlement">—</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-label">Confidence</span>
+                  <span class="kv-value" id="result-confidence">—</span>
+                </div>
+              </div>
+              <div id="result-settlement-extra" style="margin-top:0.5rem"></div>
+              <div id="result-confidence-why" class="why-box" hidden></div>
+            </div>
+          </section>
+
+          <!-- Save claim form (hidden until analyzed) -->
+          <form id="save-claim-form" class="card" hidden>
+            <div class="card-title">
+              <span class="icon" style="background:rgba(245,158,11,0.15);">💾</span>
+              Save Claim
+            </div>
+
+            <div class="form-group">
+              <label for="sc-claim-type">Claim type</label>
+              <select id="sc-claim-type" name="claim_type">
+                <option value="car">Car</option>
+                <option value="house">House</option>
+                <option value="health">Health</option>
+                <option value="business">Business</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="sc-incident-date">Incident date</label>
+                <input type="date" id="sc-incident-date" name="incident_date" required />
+              </div>
+              <div class="form-group">
+                <label for="sc-severity">Severity</label>
+                <select id="sc-severity" name="damage_severity">
+                  <option value="minor">Minor</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="severe">Severe</option>
+                  <option value="total_loss">Total Loss</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="sc-location">Location</label>
+              <input type="text" id="sc-location" name="location" placeholder="City, State" />
+            </div>
+
+            <div class="form-group">
+              <label for="sc-amount">Estimated amount (₹)</label>
+              <input type="text" id="sc-amount" name="amount_estimated" placeholder="e.g. ₹45,000 – ₹60,000" />
+            </div>
+
+            <div class="form-group">
+              <label for="sc-description">Description <span style="color:#ef4444">*</span></label>
+              <textarea id="sc-description" name="description" rows="3"
+                        placeholder="Describe what happened…" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="sc-parts">Affected parts</label>
+              <input type="text" id="sc-parts" name="affected_parts" placeholder="e.g. front bumper, left door" />
+            </div>
+
+            <!-- Hidden AI result fields -->
+            <input type="hidden" id="sc-fraud-score"  name="fraud_risk_score" />
+            <input type="hidden" id="sc-fraud-label"  name="fraud_label" />
+            <input type="hidden" id="sc-settlement"   name="settlement_predicted" />
+            <input type="hidden" id="sc-confidence"   name="settlement_confidence" />
+
+            <button type="submit" id="save-submit" class="btn-primary" style="margin-top:0.5rem">
+              Submit Claim
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── My Claims panel ── -->
+    <div id="my-claims-panel" class="tab-panel">
+      <div id="my-claims-container">
+        <div class="skeleton skeleton-table"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>© 2026 InsureBot · Orbyxa</footer>
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/claims.js"></script>
+  <script src="js/chatbot-widget.js"></script>
+  <script>
+    // ── Tab switcher ──
+    const tabs   = document.querySelectorAll(".page-tab");
+    const panels = document.querySelectorAll(".tab-panel");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.tab;
+        tabs.forEach(t => t.classList.toggle("active", t === tab));
+        panels.forEach(p => p.classList.toggle("active", p.id === target));
+      });
+    });
+
+    // ── Open My Claims if ?q= param present (from search) ──
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("q")) {
+        document.querySelector('[data-tab="my-claims-panel"]')?.click();
+      }
+    });
+
+    // ── Image preview on file select ──
+    document.getElementById("claim-file")?.addEventListener("change", function () {
+      const file = this.files?.[0];
+      if (!file) return;
+      const preview  = document.getElementById("claim-preview");
+      const img      = document.getElementById("claim-preview-img");
+      const nameEl   = document.getElementById("claim-file-name");
+      const reader   = new FileReader();
+      reader.onload  = (e) => {
+        img.src = e.target.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+      if (nameEl) nameEl.textContent = file.name;
+    });
+
+    // ── Drag-and-drop ──
+    const dropzone = document.getElementById("dropzone");
+    if (dropzone) {
+      ["dragenter", "dragover"].forEach(ev =>
+        dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add("dragging"); })
+      );
+      ["dragleave", "drop"].forEach(ev =>
+        dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove("dragging"); })
+      );
+      dropzone.addEventListener("drop", e => {
+        const file = e.dataTransfer?.files?.[0];
+        if (!file || !file.type.startsWith("image/")) return;
+        const input = document.getElementById("claim-file");
+        // Set file on the input via DataTransfer
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        input.dispatchEvent(new Event("change"));
+      });
+    }
+  </script>
+
+  <script>
+    // ── Theme toggle wiring ──
+    (function(){
+      var THEME_KEY = "insurebot_theme";
+      var html  = document.documentElement;
+      var btn   = document.getElementById("theme-toggle");
+      var icon  = document.getElementById("theme-icon");
+      var label = document.getElementById("theme-label");
+      function applyTheme(t) {
+        html.setAttribute("data-theme", t);
+        localStorage.setItem(THEME_KEY, t);
+        if (icon)  icon.textContent  = t === "dark" ? "☀️" : "🌙";
+        if (label) label.textContent = t === "dark" ? "Light" : "Dark";
+      }
+      // Sync icon/label with whatever the head script already set
+      applyTheme(html.getAttribute("data-theme") || "light");
+      if (btn) btn.addEventListener("click", function(){
+        applyTheme(html.getAttribute("data-theme") === "dark" ? "light" : "dark");
+      });
+    })();
+  </script>
+</body>
+</html>

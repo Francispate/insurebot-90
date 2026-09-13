@@ -1,0 +1,9 @@
+[build]
+  base = "frontend"
+  publish = "."
+  command = ""
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsureBot — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <!-- Chart.js — must load before charts.js and admin.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* ══════════════════════════════════════════════════════
+       LIGHT THEME — soft daylight courtroom / legal office
+    ══════════════════════════════════════════════════════ */
+    :root {
+      --bg-image:   url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=90&auto=format&fit=crop');
+      --bg-overlay: rgba(210,205,195,0.58);
+
+      --glass-bg:     rgba(255,255,255,0.22);
+      --glass-border: rgba(255,255,255,0.58);
+      --glass-shadow: rgba(100,80,60,0.18);
+      --glass-inset:  rgba(255,255,255,0.78);
+      --glass-inset2: rgba(255,255,255,0.18);
+
+      --text-primary:   #000000;
+      --text-secondary: rgba(0,0,0,0.70);
+      --text-muted:     rgba(0,0,0,0.45);
+
+      --accent:        #1a9e56;
+      --accent-glow:   rgba(26,158,86,0.38);
+      --accent-dim:    rgba(26,158,86,0.13);
+      --accent-border: rgba(26,158,86,0.30);
+
+      --nav-bg:        rgba(255,255,255,0.28);
+      --nav-border:    rgba(255,255,255,0.55);
+
+      --card-bg:      rgba(255,255,255,0.22);
+      --card-border:  rgba(255,255,255,0.52);
+      --card-hover:   rgba(255,255,255,0.30);
+
+      --toggle-bg:     rgba(255,255,255,0.30);
+      --toggle-border: rgba(255,255,255,0.58);
+      --toggle-color:  rgba(0,0,0,0.75);
+
+      --row-divider:   rgba(0,0,0,0.07);
+      --section-label: rgba(0,0,0,0.42);
+      --footer-color:  rgba(0,0,0,0.42);
+
+      --skeleton-a: rgba(255,255,255,0.22);
+      --skeleton-b: rgba(255,255,255,0.42);
+      --risk-bar-bg: rgba(0,0,0,0.08);
+
+      --inline-select-bg: rgba(255,255,255,0.35);
+      --inline-select-border: rgba(0,0,0,0.14);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       DARK THEME — dramatic rainy night city
+    ══════════════════════════════════════════════════════ */
+    [data-theme="dark"] {
+      --bg-image:   url('https://images.unsplash.com/photo-1519120944692-1a8d8cfc107f?w=1920&q=90&auto=format&fit=crop');
+      --bg-overlay: rgba(2,6,18,0.76);
+
+      --glass-bg:     rgba(8,16,42,0.48);
+      --glass-border: rgba(120,160,255,0.16);
+      --glass-shadow: rgba(0,0,0,0.60);
+      --glass-inset:  rgba(255,255,255,0.07);
+      --glass-inset2: rgba(0,0,0,0.28);
+
+      --text-primary:   #ffffff;
+      --text-secondary: rgba(255,255,255,0.80);
+      --text-muted:     rgba(255,255,255,0.55);
+
+      --accent:        #3ddc84;
+      --accent-glow:   rgba(61,220,132,0.32);
+      --accent-dim:    rgba(61,220,132,0.10);
+      --accent-border: rgba(61,220,132,0.22);
+
+      --nav-bg:        rgba(2,6,18,0.84);
+      --nav-border:    rgba(255,255,255,0.07);
+
+      --card-bg:      rgba(6,12,32,0.44);
+      --card-border:  rgba(110,155,255,0.13);
+      --card-hover:   rgba(255,255,255,0.07);
+
+      --toggle-bg:     rgba(255,255,255,0.08);
+      --toggle-border: rgba(255,255,255,0.13);
+      --toggle-color:  rgba(255,255,255,0.85);
+
+      --row-divider:   rgba(255,255,255,0.06);
+      --section-label: rgba(255,255,255,0.42);
+      --footer-color:  rgba(255,255,255,0.40);
+
+      --skeleton-a: rgba(255,255,255,0.05);
+      --skeleton-b: rgba(255,255,255,0.10);
+      --risk-bar-bg: rgba(255,255,255,0.10);
+
+      --inline-select-bg: rgba(255,255,255,0.07);
+      --inline-select-border: rgba(255,255,255,0.13);
+    }
+
+    /* ── Background: fixed photo + colour overlay ── */
+    body {
+      display: flex; min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      position: relative;
+      transition: color 0.35s;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: -2;
+      background-image: var(--bg-image);
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      filter: blur(6px) brightness(1.05) saturate(1.1);
+      transform: scale(1.04);
+      transition: background-image 0.5s ease;
+    }
+    [data-theme="dark"] body::before { filter: blur(6px) brightness(0.50) saturate(0.80); }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: -1;
+      background: var(--bg-overlay);
+      transition: background 0.4s ease;
+    }
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0; transition: opacity 0.4s;
+      background-image:
+        linear-gradient(rgba(100,150,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,150,255,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+    [data-theme="dark"] .grid-bg { opacity: 1; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px; flex-shrink: 0; position: relative; z-index: 1;
+      background: var(--nav-bg);
+      backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+      border-right: 1px solid var(--nav-border);
+      display: flex; flex-direction: column;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      transition: background 0.35s, border-color 0.3s;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 1.25rem 1.25rem 0.75rem;
+      font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700;
+      color: var(--text-primary); text-decoration: none;
+      border-bottom: 1px solid var(--row-divider);
+      margin-bottom: 0.5rem;
+    }
+    .logo-mark {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 3px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.3s;
+    }
+    [data-theme="dark"] .logo-mark {
+      background: linear-gradient(135deg, rgba(61,220,132,0.16), rgba(67,108,220,0.22));
+      border-color: rgba(61,220,132,0.26);
+    }
+    .sidebar-badge {
+      font-size: 0.62rem; font-weight: 700; padding: 2px 6px;
+      border-radius: 20px; background: rgba(239,68,68,0.2); color: #ef4444;
+      margin-left: 4px;
+    }
+    .sidebar-section {
+      padding: 0.25rem 0.75rem; margin-top: 0.5rem;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--section-label);
+    }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 9px;
+      padding: 0.55rem 1rem; border-radius: 8px; margin: 1px 0.5rem;
+      font-size: 0.83rem; font-weight: 500;
+      color: var(--text-secondary); text-decoration: none; cursor: pointer;
+      background: none; border: none; width: calc(100% - 1rem); text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      background: var(--accent-dim); color: var(--accent);
+    }
+    .sidebar-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.8; }
+    .sidebar-footer {
+      margin-top: auto; padding: 1rem;
+      border-top: 1px solid var(--row-divider);
+    }
+    .sidebar-user { display: flex; align-items: center; gap: 8px; margin-bottom: 0.75rem; }
+    .sidebar-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .sidebar-user-name { font-size: 0.8rem; font-weight: 500; color: var(--text-primary); }
+    .sidebar-user-role { font-size: 0.7rem; color: var(--text-muted); }
+
+    #theme-toggle {
+      width: 100%; padding: 0.45rem 0.75rem; border-radius: 8px;
+      background: var(--toggle-bg); border: 1px solid var(--toggle-border);
+      color: var(--toggle-color); cursor: pointer; font-size: 0.78rem; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    #theme-toggle:hover { background: var(--card-hover); }
+    .logout-link {
+      display: block; width: 100%; margin-top: 0.5rem; padding: 0.45rem 0.75rem;
+      border-radius: 8px; text-align: center; font-size: 0.78rem;
+      background: none; border: 1px solid rgba(239,68,68,0.25); color: rgba(239,68,68,0.8);
+      cursor: pointer; text-decoration: none; transition: border-color 0.15s, color 0.15s;
+    }
+    .logout-link:hover { border-color: #ef4444; color: #ef4444; }
+
+    /* ── Main content ── */
+    .admin-main {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 2rem 2.5rem 4rem; max-width: 100%;
+      position: relative; z-index: 1;
+    }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; }
+      .admin-main { padding: 1.5rem; }
+    }
+
+    /* ── Section ── */
+    .admin-section { margin-bottom: 2.5rem; }
+    .admin-section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .admin-section-title {
+      font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700;
+      color: var(--text-primary);
+    }
+    .admin-section-title .section-sub {
+      font-family: 'Inter', sans-serif; font-size: 0.78rem;
+      color: var(--text-muted); font-weight: 400; margin-left: 0.5rem;
+    }
+
+    /* ── Refresh button ── */
+    .btn-refresh {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.78rem; font-weight: 500;
+      background: var(--toggle-bg);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--toggle-border);
+      color: var(--toggle-color); cursor: pointer; transition: border-color 0.15s, transform 0.15s;
+    }
+    .btn-refresh:active { transform: scale(0.96); }
+    .btn-refresh:hover { border-color: var(--accent); color: var(--text-primary); }
+
+    /* ── Glass panel (shared by stat cards, chart cards, tables) ── */
+    .glass-panel {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+      box-shadow:
+        0 10px 40px var(--glass-shadow), 0 2px 8px rgba(0,0,0,0.08),
+        inset 0 1px 0 var(--glass-inset), inset 0 -1px 0 var(--glass-inset2);
+      transition: all 0.3s;
+    }
+
+    /* ── Stat cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .stat-card {
+      border-radius: 16px; padding: 1.25rem;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-label {
+      font-size: 0.75rem; font-weight: 500; margin-bottom: 0.5rem;
+      color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .stat-value { font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; }
+    .stat-card:nth-child(1) .stat-value { color: #6366f1; }
+    [data-theme="dark"] .stat-card:nth-child(1) .stat-value { color: #a5b4fc; }
+    .stat-card:nth-child(2) .stat-value { color: #0891b2; }
+    [data-theme="dark"] .stat-card:nth-child(2) .stat-value { color: #22d3ee; }
+    .stat-card:nth-child(3) .stat-value { color: #d97706; }
+    [data-theme="dark"] .stat-card:nth-child(3) .stat-value { color: #f59e0b; }
+    .stat-card:nth-child(4) .stat-value { color: #dc2626; }
+    [data-theme="dark"] .stat-card:nth-child(4) .stat-value { color: #ef4444; }
+
+    /* ── Charts row ── */
+    .charts-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.25rem; margin-bottom: 2.5rem;
+    }
+    @media (max-width: 640px) { .charts-row { grid-template-columns: 1fr; } }
+    .chart-card { border-radius: 16px; padding: 1.25rem; }
+    .chart-card-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary); }
+    .chart-canvas-wrap { height: 200px; position: relative; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; border-radius: 16px; padding: 0.5rem; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .data-table th {
+      text-align: left; padding: 0.6rem 0.75rem; font-weight: 600; font-size: 0.73rem;
+      color: var(--text-muted); border-bottom: 1px solid var(--row-divider);
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--row-divider);
+      vertical-align: middle; white-space: nowrap; color: var(--text-primary);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .row-self { background: var(--accent-dim); }
+    .muted { color: var(--text-muted); font-size: 0.78rem; }
+    .small { font-size: 0.78rem; }
+
+    /* Inline selects */
+    .inline-select {
+      padding: 0.3rem 0.6rem; border-radius: 6px; font-size: 0.78rem;
+      background: var(--inline-select-bg); border: 1px solid var(--inline-select-border);
+      color: var(--text-primary); cursor: pointer;
+    }
+    .inline-select:disabled { opacity: 0.5; cursor: not-allowed; }
+    .status-changed { animation: flash 0.4s ease; }
+    @keyframes flash { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+    .badge-pending       { background: rgba(245,158,11,0.18); color: #f59e0b; }
+    .badge-approved      { background: rgba(16,185,129,0.18); color: #10b981; }
+    .badge-rejected      { background: rgba(239,68,68,0.18);  color: #ef4444; }
+    .badge-investigating { background: rgba(99,102,241,0.18); color: #6366f1; }
+    .badge-genuine       { background: rgba(16,185,129,0.18); color: #10b981; }
+    .badge-suspicious    { background: rgba(245,158,11,0.18); color: #f59e0b; }
+    .badge-fraud         { background: rgba(239,68,68,0.18);  color: #ef4444; }
+
+    /* Risk bar */
+    .risk-bar { height: 5px; border-radius: 3px; background: var(--risk-bar-bg); overflow: hidden; }
+    .risk-bar-fill { height: 100%; border-radius: 3px; }
+    .risk-bar-fill.low    { background: #10b981; }
+    .risk-bar-fill.medium { background: #f59e0b; }
+    .risk-bar-fill.high   { background: #ef4444; }
+
+    /* Alerts */
+    .alert-info {
+      padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      color: var(--text-primary);
+    }
+    .alert-danger {
+      padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.22);
+      color: var(--text-primary);
+    }
+
+    /* Skeleton / Spinner */
+    .skeleton {
+      background: linear-gradient(90deg, var(--skeleton-a) 25%, var(--skeleton-b) 50%, var(--skeleton-a) 75%);
+      background-size: 200% 100%; animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .spinner {
+      display: inline-block; width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.25); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Page heading */
+    .page-heading { margin-bottom: 2rem; }
+    .page-heading h1 {
+      font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;
+      color: var(--text-primary); letter-spacing: -0.02em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    [data-theme="dark"] .page-heading h1 { text-shadow: 0 2px 18px rgba(0,0,0,0.55); }
+    .page-heading p { font-size: 0.83rem; color: var(--text-secondary); }
+  </style>
+
+  <!-- Theme: set before paint to prevent flash -->
+  <script>
+    (function(){
+      var k = "insurebot_theme";
+      var saved = localStorage.getItem(k);
+      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.setAttribute("data-theme", saved || (prefersDark ? "dark" : "light"));
+    })();
+  </script>
+</head>
+<body data-requires-admin>
+
+  <div class="grid-bg"></div>
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <a href="dashboard.html" class="sidebar-logo">
+      <span class="logo-mark">🛡</span>
+      InsureBot
+      <span class="sidebar-badge">Admin</span>
+    </a>
+
+    <div class="sidebar-section">Overview</div>
+    <button class="sidebar-link active" id="sidebar-stats-link" onclick="scrollToSection('stats-section')">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+      </svg>
+      Stats
+    </button>
+
+    <div class="sidebar-section">Management</div>
+    <button class="sidebar-link" onclick="scrollToSection('claims-section')">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      Claims
+    </button>
+    <button class="sidebar-link" onclick="scrollToSection('users-section')">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      Users
+    </button>
+
+    <div class="sidebar-section">Navigation</div>
+    <a href="dashboard.html" class="sidebar-link">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      Dashboard
+    </a>
+    <a href="claim.html" class="sidebar-link">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      New Claim
+    </a>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" data-auth-user hidden>
+        <div class="sidebar-avatar" data-auth-initial></div>
+        <div>
+          <div class="sidebar-user-name" data-auth-name></div>
+          <div class="sidebar-user-role">Admin</div>
+        </div>
+      </div>
+      <button id="theme-toggle" aria-label="Toggle theme">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">Dark</span>
+      </button>
+      <button class="logout-link" data-auth-logout hidden>Log out</button>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="admin-main">
+
+    <div class="page-heading">
+      <h1>Admin Panel</h1>
+      <p>System overview, claims management, and user roles.</p>
+    </div>
+
+    <!-- ── Stats ── -->
+    <div id="stats-section" class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">
+          Overview
+          <span class="section-sub">live data</span>
+        </div>
+        <button class="btn-refresh" id="admin-refresh-stats">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card glass-panel">
+          <div class="stat-label">Total users</div>
+          <div class="stat-value" id="admin-stat-users">—</div>
+        </div>
+        <div class="stat-card glass-panel">
+          <div class="stat-label">Total claims</div>
+          <div class="stat-value" id="admin-stat-claims">—</div>
+        </div>
+        <div class="stat-card glass-panel">
+          <div class="stat-label">Pending</div>
+          <div class="stat-value" id="admin-stat-pending">—</div>
+        </div>
+        <div class="stat-card glass-panel">
+          <div class="stat-label">High-risk</div>
+          <div class="stat-value" id="admin-stat-high-risk">—</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-row">
+        <div class="chart-card glass-panel">
+          <div class="chart-card-title">Claims by type</div>
+          <div class="chart-canvas-wrap">
+            <canvas id="chart-claims-type"></canvas>
+          </div>
+        </div>
+        <div class="chart-card glass-panel">
+          <div class="chart-card-title">Fraud distribution</div>
+          <div class="chart-canvas-wrap">
+            <canvas id="chart-fraud-dist"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Claims ── -->
+    <div id="claims-section" class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">All Claims</div>
+        <button class="btn-refresh" id="admin-refresh-claims">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+      <div id="admin-claims-table" class="glass-panel" style="border-radius:16px;padding:0.5rem;">
+        <div class="skeleton" style="height:160px;border-radius:10px"></div>
+      </div>
+    </div>
+
+    <!-- ── Users ── -->
+    <div id="users-section" class="admin-section">
+      <div class="admin-section-header">
+        <div class="admin-section-title">Users</div>
+        <button class="btn-refresh" id="admin-refresh-users">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+      <div id="admin-users-table" class="glass-panel" style="border-radius:16px;padding:0.5rem;">
+        <div class="skeleton" style="height:120px;border-radius:10px"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast-container"></div>
+
+  <!-- Script order: api → auth → charts → admin -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    // Smooth scroll to section
+    function scrollToSection(id) {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.querySelectorAll(".sidebar-link").forEach(l => l.classList.remove("active"));
+      event?.currentTarget?.classList.add("active");
+    }
+
+    // ── Theme toggle wiring (self-contained, same pattern as claim.html) ──
+    (function(){
+      var THEME_KEY = "insurebot_theme";
+      var html  = document.documentElement;
+      var btn   = document.getElementById("theme-toggle");
+      var icon  = document.getElementById("theme-icon");
+      var label = document.getElementById("theme-label");
+      function applyTheme(t) {
+        html.setAttribute("data-theme", t);
+        localStorage.setItem(THEME_KEY, t);
+        if (icon)  icon.textContent  = t === "dark" ? "☀️" : "🌙";
+        if (label) label.textContent = t === "dark" ? "Light" : "Dark";
+      }
+      applyTheme(html.getAttribute("data-theme") || "light");
+      if (btn) btn.addEventListener("click", function(){
+        applyTheme(html.getAttribute("data-theme") === "dark" ? "light" : "dark");
+      });
+    })();
+  </script>
+</body>
+</html>

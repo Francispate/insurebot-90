@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InsureBot — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/chatbot-widget.css" />
+  <style>
+    /* ══════════════════════════════════════════════════════
+       RESET
+    ══════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ══════════════════════════════════════════════════════
+       LIGHT THEME VARIABLES (warm sand + green)
+    ══════════════════════════════════════════════════════ */
+    :root {
+      /* Background image — warm cosy interior, bright */
+      --bg-image: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=90&auto=format&fit=crop');
+      /* Overlay that blends image into the sand palette */
+      --bg-overlay: rgba(200,191,176,0.55);
+
+      --glass-bg:     rgba(255,255,255,0.22);
+      --glass-border: rgba(255,255,255,0.58);
+      --glass-shadow: rgba(100,80,60,0.18);
+      --glass-inset:  rgba(255,255,255,0.78);
+      --glass-inset2: rgba(255,255,255,0.18);
+
+      --card-bg:      rgba(255,255,255,0.18);
+      --card-border:  rgba(255,255,255,0.52);
+      --card-hover:   rgba(255,255,255,0.3);
+
+      --text-primary:   #000000;
+      --text-secondary: rgba(0,0,0,0.70);
+      --text-muted:     rgba(0,0,0,0.45);
+
+      --accent:        #1a9e56;
+      --accent-glow:   rgba(26,158,86,0.38);
+      --accent-dim:    rgba(26,158,86,0.13);
+      --accent-border: rgba(26,158,86,0.30);
+      --accent-text:   #ffffff;
+
+      --pill-bg:       rgba(255,255,255,0.25);
+      --pill-border:   rgba(255,255,255,0.5);
+
+      --input-bg:      rgba(255,255,255,0.30);
+      --input-border:  rgba(255,255,255,0.65);
+      --input-color:   #000000;
+      --input-ph:      rgba(0,0,0,0.40);
+
+      --nav-bg:        rgba(255,255,255,0.28);
+      --nav-border:    rgba(255,255,255,0.55);
+
+      --row-divider:   rgba(0,0,0,0.10);
+
+      --btn-primary-bg:     #1a9e56;
+      --btn-primary-border: #1a9e56;
+      --btn-primary-color:  #ffffff;
+      --btn-primary-glow:   rgba(26,158,86,0.38);
+
+      --toggle-bg:     rgba(255,255,255,0.30);
+      --toggle-border: rgba(255,255,255,0.58);
+      --toggle-color:  rgba(0,0,0,0.75);
+
+      --footer-color:  rgba(0,0,0,0.45);
+      --footer-border: rgba(0,0,0,0.12);
+
+      --skeleton-a: rgba(255,255,255,0.22);
+      --skeleton-b: rgba(255,255,255,0.42);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       DARK THEME VARIABLES (deep navy + blue glass)
+    ══════════════════════════════════════════════════════ */
+    [data-theme="dark"] {
+      /* Background image — moody dark blue evening interior */
+      --bg-image: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=90&auto=format&fit=crop');
+      --bg-overlay: rgba(4,8,20,0.72);
+
+      --glass-bg:     rgba(8,16,42,0.48);
+      --glass-border: rgba(120,160,255,0.16);
+      --glass-shadow: rgba(0,0,0,0.60);
+      --glass-inset:  rgba(255,255,255,0.07);
+      --glass-inset2: rgba(0,0,0,0.28);
+
+      --card-bg:      rgba(255,255,255,0.04);
+      --card-border:  rgba(255,255,255,0.08);
+      --card-hover:   rgba(255,255,255,0.07);
+
+      --text-primary:   #ffffff;
+      --text-secondary: rgba(255,255,255,0.80);
+      --text-muted:     rgba(255,255,255,0.55);
+
+      --accent:        #3ddc84;
+      --accent-glow:   rgba(61,220,132,0.32);
+      --accent-dim:    rgba(61,220,132,0.10);
+      --accent-border: rgba(61,220,132,0.22);
+      --accent-text:   #0b1a12;
+
+      --pill-bg:       rgba(255,255,255,0.06);
+      --pill-border:   rgba(255,255,255,0.11);
+
+      --input-bg:      rgba(255,255,255,0.07);
+      --input-border:  rgba(255,255,255,0.13);
+      --input-color:   rgba(240,248,255,0.93);
+      --input-ph:      rgba(200,220,255,0.30);
+
+      --nav-bg:        rgba(4,8,20,0.82);
+      --nav-border:    rgba(255,255,255,0.07);
+
+      --row-divider:   rgba(255,255,255,0.06);
+
+      --btn-primary-bg:     linear-gradient(135deg, rgba(67,108,220,0.55), rgba(80,50,200,0.50));
+      --btn-primary-border: rgba(130,180,255,0.32);
+      --btn-primary-color:  rgba(240,248,255,0.97);
+      --btn-primary-glow:   rgba(67,108,220,0.48);
+
+      --toggle-bg:     rgba(255,255,255,0.08);
+      --toggle-border: rgba(255,255,255,0.13);
+      --toggle-color:  rgba(180,210,255,0.72);
+
+      --footer-color:  rgba(160,190,255,0.28);
+      --footer-border: rgba(255,255,255,0.05);
+
+      --skeleton-a: rgba(255,255,255,0.05);
+      --skeleton-b: rgba(255,255,255,0.10);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       FULL-PAGE BACKGROUND (image + overlay)
+    ══════════════════════════════════════════════════════ */
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      display: flex; flex-direction: column;
+      position: relative; overflow-x: hidden;
+      transition: color 0.35s;
+    }
+
+    /* Fixed background layer — switches between two images */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: -2;
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      /* Slight blur so UI glass pops in front */
+      filter: blur(6px) brightness(1.05) saturate(1.1);
+      transform: scale(1.04); /* hide blur edge bleed */
+      transition: background-image 0.5s ease;
+    }
+    [data-theme="dark"] body::before {
+      filter: blur(6px) brightness(0.55) saturate(0.85);
+    }
+
+    /* Colour-tinted overlay on top of the image */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: -1;
+      background: var(--bg-overlay);
+      transition: background 0.4s ease;
+    }
+
+    /* ══════════════════════════════════════════════════════
+       GRID OVERLAY (dark only)
+    ══════════════════════════════════════════════════════ */
+    .grid-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0; transition: opacity 0.4s;
+      background-image:
+        linear-gradient(rgba(100,150,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,150,255,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+    [data-theme="dark"] .grid-bg { opacity: 1; }
+
+    /* ══════════════════════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════════════════════ */
+    .navbar {
+      position: sticky; top: 0; z-index: 200;
+      height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-border);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      transition: background 0.35s, border-color 0.3s;
+    }
+    .navbar-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Sora', sans-serif; font-size: 1.08rem; font-weight: 700;
+      color: var(--text-primary); text-decoration: none; letter-spacing: -0.01em;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 3px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.3s;
+    }
+    [data-theme="dark"] .logo-mark {
+      background: linear-gradient(135deg, rgba(61,220,132,0.16), rgba(67,108,220,0.22));
+      border-color: rgba(61,220,132,0.26);
+    }
+    .navbar-links { display: flex; align-items: center; gap: 0.2rem; }
+    .navbar-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--text-secondary); text-decoration: none;
+      padding: 0.38rem 0.85rem; border-radius: 8px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .navbar-links a:hover { color: var(--text-primary); background: var(--card-hover); }
+    .navbar-actions { display: flex; align-items: center; gap: 0.65rem; }
+    .navbar-user { display: flex; align-items: center; gap: 8px; }
+    .navbar-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #22d3ee);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.68rem; font-weight: 700; color: #fff;
+    }
+    .navbar-user-name { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); }
+    #theme-toggle {
+      background: var(--toggle-bg);
+      border: 1px solid var(--toggle-border);
+      border-radius: 9px; padding: 6px 10px; cursor: pointer;
+      color: var(--toggle-color);
+      display: flex; align-items: center; gap: 5px;
+      backdrop-filter: blur(12px);
+      font-size: 0.76rem; font-weight: 600; font-family: 'Inter', sans-serif;
+      box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    #theme-toggle:hover { background: var(--card-hover); }
+    .logout-link {
+      font-size: 0.83rem; color: var(--text-muted);
+      background: none; border: none; cursor: pointer;
+      padding: 0; text-decoration: none; transition: color 0.15s;
+    }
+    .logout-link:hover { color: #ef4444; }
+    .btn-ghost-nav {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0.45rem 0.95rem; border-radius: 9px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      color: var(--text-primary); font-size: 0.83rem; font-weight: 500;
+      text-decoration: none; backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    .btn-ghost-nav:hover { background: var(--card-hover); }
+
+    /* ══════════════════════════════════════════════════════
+       MAIN CONTENT
+    ══════════════════════════════════════════════════════ */
+    .dash-main {
+      flex: 1; position: relative; z-index: 1;
+      max-width: 1120px; width: 100%;
+      margin: 0 auto; padding: 2.5rem 2rem 5rem;
+    }
+
+    /* ── GREETING ── */
+    .dash-greeting-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.25rem; margin-bottom: 2rem;
+    }
+    .dash-greeting-text h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800;
+      line-height: 1.12; margin-bottom: 0.3rem;
+      letter-spacing: -0.025em; color: var(--text-primary);
+      /* Text shadow so heading stays legible over image */
+      text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    [data-theme="dark"] .dash-greeting-text h1 {
+      text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+    }
+    .name-highlight { color: var(--accent); }
+    .dash-greeting-text p {
+      font-size: 0.875rem; color: var(--text-secondary); max-width: none;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+
+    /* ── SEARCH ── */
+    .dash-search-wrap { position: relative; max-width: 360px; width: 100%; }
+    .dash-search-input {
+      width: 100%; padding: 0.68rem 2.75rem 0.68rem 0.95rem;
+      border-radius: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--input-color);
+      font-size: 0.875rem; font-family: 'Inter', sans-serif;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 12px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s;
+    }
+    .dash-search-input::placeholder { color: var(--input-ph); }
+    .dash-search-input:focus {
+      outline: none;
+      border-color: var(--accent-border);
+      box-shadow: 0 0 0 3px var(--accent-dim), 0 4px 12px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+    }
+    .dash-search-btn {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); display: flex; padding: 4px;
+      transition: color 0.15s;
+    }
+    .dash-search-btn:hover { color: var(--accent); }
+
+    /* ══════════════════════════════════════════════════════
+       STAT PILLS
+    ══════════════════════════════════════════════════════ */
+    .dash-stats { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .dash-stat-pill {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0.6rem 1.15rem; border-radius: 40px;
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 4px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      font-size: 0.82rem; transition: all 0.2s;
+    }
+    .dash-stat-pill:hover { background: var(--card-hover); }
+    .pill-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .pill-dot-total   { background: #a5b4fc; box-shadow: 0 0 8px rgba(165,180,252,0.6); }
+    .pill-dot-pending { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.6); }
+    .pill-dot-approved { background: #3ddc84; box-shadow: 0 0 8px rgba(61,220,132,0.6); }
+    .pill-num {
+      font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem;
+      color: var(--text-primary);
+    }
+    .pill-label { color: var(--text-secondary); }
+
+    /* ══════════════════════════════════════════════════════
+       QUICK ACTIONS
+    ══════════════════════════════════════════════════════ */
+    .quick-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .qa-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 0.54rem 1.05rem; border-radius: 10px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary); font-size: 0.83rem; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 14px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition: all 0.2s; font-family: 'Inter', sans-serif;
+    }
+    .qa-btn:hover {
+      background: var(--card-hover);
+      border-color: var(--accent-border);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+    }
+    /* Primary CTA button */
+    .qa-btn-primary {
+      background: var(--btn-primary-bg) !important;
+      border-color: var(--btn-primary-border) !important;
+      color: var(--btn-primary-color) !important;
+      box-shadow: 0 4px 18px var(--btn-primary-glow), inset 0 1px 0 rgba(255,255,255,0.28) !important;
+      font-weight: 700 !important;
+    }
+    .qa-btn-primary:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 26px var(--btn-primary-glow), inset 0 1px 0 rgba(255,255,255,0.35) !important;
+    }
+
+    /* ══════════════════════════════════════════════════════
+       DASHBOARD GRID
+    ══════════════════════════════════════════════════════ */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+    }
+    @media (max-width: 740px) { .dash-grid { grid-template-columns: 1fr; } }
+
+    /* ── Glass card ── */
+    .dash-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px; padding: 1.55rem;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow:
+        0 10px 40px var(--glass-shadow),
+        0 2px 8px rgba(0,0,0,0.08),
+        inset 0 1px 0 var(--glass-inset),
+        inset 0 -1px 0 var(--glass-inset2);
+      transition: all 0.3s;
+    }
+    [data-theme="dark"] .dash-card {
+      background: rgba(6,12,32,0.42);
+      border-color: rgba(110,155,255,0.13);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.025),
+        0 10px 44px rgba(0,0,0,0.60),
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        inset 0 -1px 0 rgba(0,0,0,0.28);
+    }
+
+    .dash-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .dash-card-title {
+      font-size: 0.875rem; font-weight: 700;
+      display: flex; align-items: center; gap: 9px;
+      color: var(--text-primary); letter-spacing: -0.01em;
+    }
+    .card-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      backdrop-filter: blur(6px);
+    }
+    .dash-card-link {
+      font-size: 0.78rem; font-weight: 600;
+      color: var(--accent); text-decoration: none; transition: opacity 0.15s;
+    }
+    .dash-card-link:hover { opacity: 0.7; }
+
+    /* ── Claim rows ── */
+    .dash-claim-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.72rem 0; gap: 0.5rem;
+      border-bottom: 1px solid var(--row-divider);
+    }
+    .dash-claim-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .dash-claim-row:first-child { padding-top: 0; }
+    .dash-claim-meta { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .dash-claim-type { font-size: 0.875rem; font-weight: 600; text-transform: capitalize; white-space: nowrap; }
+    .dash-claim-id { font-size: 0.74rem; color: var(--text-muted); }
+    .dash-claim-info { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .dash-claim-amount { font-size: 0.8rem; color: var(--text-secondary); }
+    .dash-claim-date { font-size: 0.72rem; color: var(--text-muted); padding-left: 6px; }
+
+    /* ── Policy rows ── */
+    .dash-policy-row { padding: 0.72rem 0; border-bottom: 1px solid var(--row-divider); }
+    .dash-policy-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .dash-policy-row:first-child { padding-top: 0; }
+    .dash-policy-name {
+      font-size: 0.875rem; font-weight: 500; margin-bottom: 3px;
+      display: flex; align-items: center; gap: 6px; color: var(--text-primary);
+    }
+    .dash-policy-summary { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+    .dash-policy-date { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 600; backdrop-filter: blur(4px);
+    }
+    .badge-pending       { background: rgba(245,158,11,0.16); color: #f59e0b; border: 1px solid rgba(245,158,11,0.28); }
+    .badge-approved      { background: rgba(61,220,132,0.13); color: #3ddc84; border: 1px solid rgba(61,220,132,0.24); }
+    .badge-rejected      { background: rgba(239,68,68,0.13);  color: #ef4444; border: 1px solid rgba(239,68,68,0.24); }
+    .badge-investigating { background: rgba(99,102,241,0.13); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.24); }
+
+    /* ══════════════════════════════════════════════════════
+       CHAT CTA CARD (full width)
+    ══════════════════════════════════════════════════════ */
+    .dash-chat-card {
+      grid-column: 1 / -1;
+      background: var(--glass-bg);
+      border: 1px solid var(--accent-border);
+      border-radius: 20px; padding: 1.65rem 1.85rem;
+      backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      box-shadow: 0 10px 40px var(--glass-shadow), inset 0 1px 0 var(--glass-inset), inset 0 -1px 0 var(--glass-inset2);
+      position: relative; overflow: hidden;
+    }
+    [data-theme="dark"] .dash-chat-card { border-color: rgba(110,155,255,0.15); }
+    .dash-chat-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 55%);
+    }
+    [data-theme="dark"] .dash-chat-card::before {
+      background: linear-gradient(135deg, rgba(67,108,220,0.09) 0%, rgba(61,220,132,0.04) 55%, transparent 75%);
+    }
+    .dash-chat-info { position: relative; }
+    .dash-chat-info h3 {
+      font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700;
+      margin-bottom: 0.28rem; color: var(--text-primary);
+    }
+    .dash-chat-info p { font-size: 0.83rem; color: var(--text-secondary); max-width: 52ch; }
+
+    /* ── Primary button ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 0.65rem 1.35rem; border-radius: 11px;
+      font-size: 0.875rem; font-weight: 700; font-family: 'Inter', sans-serif;
+      cursor: pointer; text-decoration: none; position: relative; transition: all 0.2s;
+    }
+    [data-theme="light"] .btn-primary {
+      background: var(--accent); border: 1px solid var(--accent);
+      color: var(--accent-text);
+      box-shadow: 0 4px 18px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.32);
+    }
+    [data-theme="light"] .btn-primary:hover {
+      background: #17874a; transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(61,220,132,0.48), inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+    [data-theme="dark"] .btn-primary {
+      background: linear-gradient(135deg, rgba(67,108,220,0.55), rgba(80,50,200,0.50));
+      border: 1px solid rgba(130,180,255,0.32); color: rgba(240,248,255,0.97);
+      box-shadow: 0 4px 20px rgba(67,108,220,0.48), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    [data-theme="dark"] .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(80,128,240,0.70), rgba(100,65,220,0.65));
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(67,108,220,0.62), inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       ALERTS + SKELETON
+    ══════════════════════════════════════════════════════ */
+    .alert-info {
+      padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      color: var(--text-primary);
+    }
+    .alert-info a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .alert-danger {
+      padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.875rem;
+      background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.22);
+      color: var(--text-primary);
+    }
+    .skeleton {
+      background: linear-gradient(90deg, var(--skeleton-a) 25%, var(--skeleton-b) 50%, var(--skeleton-a) 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* ══════════════════════════════════════════════════════
+       FOOTER + SPINNER
+    ══════════════════════════════════════════════════════ */
+    .dash-footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 1.5rem;
+      font-size: 0.78rem; color: var(--footer-color);
+      border-top: 1px solid var(--footer-border);
+    }
+    .spinner {
+      display: inline-block; width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.65s linear infinite; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .navbar-links { display: none; }
+      .dash-main { padding: 1.5rem 1rem 4rem; }
+    }
+  </style>
+</head>
+<body data-requires-auth>
+
+  <div class="grid-bg"></div>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-logo">
+      <span class="logo-mark">🛡</span>
+      InsureBot
+    </a>
+    <div class="navbar-links">
+      <a href="claim.html">New Claim</a>
+      <a href="policy.html">Policies</a>
+      <a href="chat.html">AI Chat</a>
+      <a href="admin.html" data-admin-only hidden>Admin</a>
+    </div>
+    <div class="navbar-actions">
+      <button id="theme-toggle" aria-label="Toggle theme">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">Dark</span>
+      </button>
+      <div class="navbar-user" data-auth-user hidden>
+        <div class="navbar-avatar" data-auth-initial></div>
+        <span class="navbar-user-name" data-auth-name></span>
+      </div>
+      <button class="logout-link" data-auth-logout hidden>Log out</button>
+      <a href="login.html" class="btn-ghost-nav" data-auth-guest>Log in</a>
+    </div>
+  </nav>
+
+  <!-- ══ MAIN ══ -->
+  <main class="dash-main">
+
+    <!-- Greeting + Search -->
+    <div class="dash-greeting-row">
+      <div class="dash-greeting-text">
+        <h1>
+          <span id="dash-greeting">Good morning</span>,
+          <span id="dash-user-name" class="name-highlight">there!</span>
+        </h1>
+        <p>Here's what's happening with your claims today.</p>
+      </div>
+      <form id="dash-search-form" class="dash-search-wrap">
+        <input id="dash-search-input" type="search" class="dash-search-input"
+               placeholder="Search claims…" autocomplete="off" />
+        <button type="submit" class="dash-search-btn" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- Stat pills -->
+    <div class="dash-stats">
+      <div class="dash-stat-pill">
+        <span class="pill-dot pill-dot-total"></span>
+        <span class="pill-num" id="dash-stat-total">—</span>
+        <span class="pill-label">Total claims</span>
+      </div>
+      <div class="dash-stat-pill">
+        <span class="pill-dot pill-dot-pending"></span>
+        <span class="pill-num" id="dash-stat-pending">—</span>
+        <span class="pill-label">Pending</span>
+      </div>
+      <div class="dash-stat-pill">
+        <span class="pill-dot pill-dot-approved"></span>
+        <span class="pill-num" id="dash-stat-approved">—</span>
+        <span class="pill-label">Approved</span>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="quick-actions">
+      <a href="claim.html" class="qa-btn qa-btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Claim
+      </a>
+      <a href="policy.html" class="qa-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Analyze Policy
+      </a>
+      <a href="chat.html" class="qa-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Ask InsureBot
+      </a>
+    </div>
+
+    <!-- Content grid -->
+    <div class="dash-grid">
+      <!-- Recent Claims -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title">
+            <span class="card-icon" style="background:rgba(99,102,241,0.15);">📋</span>
+            Recent Claims
+          </div>
+          <a href="claim.html" class="dash-card-link">View all →</a>
+        </div>
+        <div id="dash-recent-claims">
+          <div class="skeleton" style="height:80px;border-radius:10px"></div>
+        </div>
+      </div>
+
+      <!-- My Policies -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title">
+            <span class="card-icon" style="background:rgba(245,158,11,0.15);">📄</span>
+            My Policies
+          </div>
+          <a href="policy.html" class="dash-card-link">Analyze new →</a>
+        </div>
+        <div id="dash-recent-policies">
+          <div class="skeleton" style="height:60px;border-radius:10px"></div>
+        </div>
+      </div>
+
+      <!-- Chat CTA -->
+      <div class="dash-chat-card">
+        <div class="dash-chat-info">
+          <h3>Ask InsureBot anything</h3>
+          <p>IRDAI regulations, policy coverage, claim procedures — our AI assistant knows Indian insurance inside out.</p>
+        </div>
+        <a href="chat.html" class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Open AI Chat
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="dash-footer">© 2026 InsureBot · Orbyxa · Built for Indian insurance</footer>
+
+  <div id="toast-container"></div>
+
+  <!-- Chat widget -->
+  <div class="chat-widget-wrap" id="chat-widget">
+    <div class="chat-panel" id="chat-panel" hidden>
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <div class="chat-avatar">IB</div>
+          <div>
+            <div class="chat-title">InsureBot AI</div>
+            <div class="chat-subtitle">Insurance assistant · Online</div>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="chat-icon-btn" id="chat-expand-btn" aria-label="Expand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+          <button class="chat-icon-btn" id="chat-close-btn" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input-area">
+        <textarea class="chat-textarea" id="chat-input" rows="1" placeholder="Ask about your claim…"></textarea>
+        <button class="chat-send-btn" id="chat-send-btn" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="chat-launcher" id="chat-launcher" aria-label="Open InsureBot chat">
+      <svg class="chat-launcher-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </button>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/chatbot-widget.js"></script>
+  <script>
+    const THEME_KEY = "insurebot_theme";
+    const html = document.documentElement;
+    const toggleBtn  = document.getElementById("theme-toggle");
+    const themeIcon  = document.getElementById("theme-icon");
+    const themeLabel = document.getElementById("theme-label");
+
+    function applyTheme(t) {
+      html.setAttribute("data-theme", t);
+      localStorage.setItem(THEME_KEY, t);
+      themeIcon.textContent  = t === "dark" ? "☀️" : "🌙";
+      themeLabel.textContent = t === "dark" ? "Light" : "Dark";
+    }
+
+    const saved = localStorage.getItem(THEME_KEY);
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(saved || (prefersDark ? "dark" : "light"));
+
+    toggleBtn.addEventListener("click", () => {
+      applyTheme(html.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    });
+  </script>
+</body>
+</html>
