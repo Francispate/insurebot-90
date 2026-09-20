@@ -46,19 +46,30 @@ _CLAIM_TYPE_ALIASES = {
     "vehicle":      ("car",          0.0),
     "auto":         ("car",          0.0),
     "automobile":   ("car",          0.0),
-    # two-wheeler
+    "suv":          ("car",          0.0),
+    "truck":        ("car",          0.0),
+    "van":          ("car",          0.0),
+    # two-wheeler — all common spellings/variants
     "two_wheeler":  ("two_wheeler",  0.25),
     "two wheeler":  ("two_wheeler",  0.25),
+    "two-wheeler":  ("two_wheeler",  0.25),
+    "2 wheeler":    ("two_wheeler",  0.25),
+    "2-wheeler":    ("two_wheeler",  0.25),
+    "2wheeler":     ("two_wheeler",  0.25),
     "bike":         ("two_wheeler",  0.25),
     "motorcycle":   ("two_wheeler",  0.25),
+    "motorbike":    ("two_wheeler",  0.25),
     "scooter":      ("two_wheeler",  0.25),
     "moped":        ("two_wheeler",  0.25),
-    "motorbike":    ("two_wheeler",  0.25),
+    "scooty":       ("two_wheeler",  0.25),
+    "activa":       ("two_wheeler",  0.25),
     # house / property
     "house":        ("house",        0.5),
     "home":         ("house",        0.5),
     "property":     ("house",        0.5),
     "building":     ("house",        0.5),
+    "apartment":    ("house",        0.5),
+    "flat":         ("house",        0.5),
     # health
     "health":       ("health",       0.75),
     "medical":      ("health",       0.75),
@@ -67,20 +78,37 @@ _CLAIM_TYPE_ALIASES = {
     "business":     ("business",     1.0),
     "commercial":   ("business",     1.0),
     "shop":         ("business",     1.0),
+    "office":       ("business",     1.0),
+    # other
+    "other":        ("other",        0.1),
 }
 
 def resolve_claim_type(raw: str):
     """
     Returns (canonical_label, encoded_float) from whatever Gemini returned.
-    Falls back to ("car", 0.0) only if truly unrecognised.
+    Tries exact match → partial match → keyword heuristic → last resort "car".
     """
     key = (raw or "").strip().lower()
+
+    # Exact match
     if key in _CLAIM_TYPE_ALIASES:
         return _CLAIM_TYPE_ALIASES[key]
-    # Partial match — e.g. "two-wheeler" or "car damage"
+
+    # Partial match — e.g. "two-wheeler damage" or "motorcycle accident"
     for alias, result in _CLAIM_TYPE_ALIASES.items():
         if alias in key:
             return result
+
+    # Keyword heuristics for common Gemini free-text responses
+    if any(w in key for w in ("wheel", "cycle", "moto", "bike", "scoot", "moped")):
+        return ("two_wheeler", 0.25)
+    if any(w in key for w in ("house", "home", "flat", "apart", "build", "prop")):
+        return ("house", 0.5)
+    if any(w in key for w in ("health", "medic", "injur", "hospital")):
+        return ("health", 0.75)
+    if any(w in key for w in ("business", "commerc", "shop", "office")):
+        return ("business", 1.0)
+
     return ("car", 0.0)   # last resort
 
 
@@ -134,7 +162,7 @@ async def analyze_claim(file: UploadFile = File(...)):
             normalize_claim_amount(estimated_amount),   # claim_amount
             0.1,                                         # days_since_incident
             0.0,                                         # num_previous_claims
-            type_encoded,                                # claim_type_encoded ← fixed
+            type_encoded,                                # claim_type_encoded
             datetime.now().hour / 23,                    # hour_of_submission
             min(len(str(vision_result)) / 1000, 1.0),   # description_length
             0.8,                                         # photo_quality_score
@@ -147,7 +175,7 @@ async def analyze_claim(file: UploadFile = File(...)):
             fraud_result.get("fraud_risk_score", 0) / 100,
             severity_to_float(damage_severity),
             0.8,                                         # documentation_completeness
-            type_encoded,                                # claim_type_encoded ← fixed
+            type_encoded,                                # claim_type_encoded
             0.1,                                         # days_to_report
             0.0,                                         # previous_claims_ratio
         ]
