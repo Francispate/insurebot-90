@@ -299,7 +299,7 @@
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Single centered column: upload/form on top, results stacked below ── */
+    /* ── Single centered column ── */
     .claim-grid {
       display: flex; flex-direction: column; align-items: center;
       gap: 1.5rem;
@@ -307,7 +307,6 @@
     .claim-grid > div {
       width: 100%; max-width: 980px;
     }
-    /* Make the dropzone feel bigger/more prominent since it's now the focal point */
     .claim-grid .dropzone { padding: 3rem 2rem; }
     .claim-grid .dropzone-icon { font-size: 2.75rem; }
     .claim-grid .dropzone-text { font-size: 1rem; }
@@ -456,8 +455,6 @@
     .kv-label { color: var(--text-muted); flex-shrink: 0; }
     .kv-value { font-weight: 500; text-align: right; color: var(--text-primary); }
 
-    /* List-valued rows (arrays like Affected Parts, Rejection Risks) —
-       stack the label above the list instead of squeezing it right-aligned */
     .kv-row-list {
       flex-direction: column; align-items: stretch; gap: 0.35rem;
     }
@@ -482,7 +479,6 @@
     .risk-bar-fill.medium { background: #f59e0b; }
     .risk-bar-fill.high   { background: #ef4444; }
 
-    /* Risk score label */
     .risk-score-label { color: var(--text-muted); }
 
     /* Badges */
@@ -520,7 +516,6 @@
     @keyframes shimmer { to { background-position: -200% 0; } }
     .skeleton-table { height: 160px; border-radius: 10px; }
 
-    /* ── Analysis loading skeleton (shown while waiting on the API) ── */
     .skel-line { height: 14px; border-radius: 6px; margin-bottom: 0.9rem; }
     .skel-line:last-child { margin-bottom: 0; }
     .skel-row {
@@ -624,7 +619,7 @@
     <div id="new-claim-panel" class="tab-panel active">
       <div class="claim-grid">
 
-        <!-- LEFT: Upload + form -->
+        <!-- Upload + form -->
         <div style="display:flex;flex-direction:column;gap:1.25rem">
 
           <!-- Image dropzone -->
@@ -646,7 +641,7 @@
             <div id="claim-file-name"></div>
           </div>
 
-          <!-- Analyze button (no form wrapper needed — JS reads the file input) -->
+          <!-- Analyze button -->
           <form id="analyze-form">
             <button type="submit" id="analyze-submit" class="btn-primary">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -657,7 +652,7 @@
             </button>
           </form>
 
-          <!-- Loading skeleton (shown while waiting on the analyze API) -->
+          <!-- Loading skeleton -->
           <section id="analyze-loading" class="card" hidden>
             <div class="card-title">
               <span class="icon" style="background:rgba(99,102,241,0.15);">⏳</span>
@@ -699,10 +694,10 @@
 
         </div>
 
-        <!-- RIGHT: Results + save form -->
+        <!-- Results + save form -->
         <div style="display:flex;flex-direction:column;gap:1.25rem">
 
-          <!-- Analysis results (hidden until analyzed) -->
+          <!-- Analysis results -->
           <section id="analyze-results" class="card" hidden>
             <div class="card-title">
               <span class="icon" style="background:rgba(16,185,129,0.15);">✅</span>
@@ -767,7 +762,7 @@
             </div>
           </section>
 
-          <!-- Save claim form (hidden until analyzed) -->
+          <!-- ── Save claim form ── -->
           <form id="save-claim-form" class="card" hidden>
             <div class="card-title">
               <span class="icon" style="background:rgba(245,158,11,0.15);">💾</span>
@@ -776,8 +771,10 @@
 
             <div class="form-group">
               <label for="sc-claim-type">Claim type</label>
+              <!-- FIX: two_wheeler added so prefillSaveForm() can select it correctly -->
               <select id="sc-claim-type" name="claim_type">
                 <option value="car">Car</option>
+                <option value="two_wheeler">Two Wheeler</option>
                 <option value="house">House</option>
                 <option value="health">Health</option>
                 <option value="business">Business</option>
@@ -819,7 +816,7 @@
 
             <div class="form-group">
               <label for="sc-parts">Affected parts</label>
-              <input type="text" id="sc-parts" name="affected_parts" placeholder="e.g. front bumper, left door" />
+              <input type="text" id="sc-parts" name="affected_parts" placeholder="e.g. front fairing, fuel tank" />
             </div>
 
             <!-- Hidden AI result fields -->
@@ -902,7 +899,6 @@
         const file = e.dataTransfer?.files?.[0];
         if (!file || !file.type.startsWith("image/")) return;
         const input = document.getElementById("claim-file");
-        // Set file on the input via DataTransfer
         const dt = new DataTransfer();
         dt.items.add(file);
         input.files = dt.files;
@@ -925,7 +921,6 @@
         if (icon)  icon.textContent  = t === "dark" ? "☀️" : "🌙";
         if (label) label.textContent = t === "dark" ? "Light" : "Dark";
       }
-      // Sync icon/label with whatever the head script already set
       applyTheme(html.getAttribute("data-theme") || "light");
       if (btn) btn.addEventListener("click", function(){
         applyTheme(html.getAttribute("data-theme") === "dark" ? "light" : "dark");
