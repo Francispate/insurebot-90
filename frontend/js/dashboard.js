@@ -86,8 +86,8 @@
     const firstName = user?.name ? user.name.trim().split(/\s+/)[0] : "there";
 
     
-   
-  
+   setText("dash-user-name",  firstName + "!");
+  }
 
   // ─────────────────────────────────────────
   // 2. Search bar
