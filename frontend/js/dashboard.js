@@ -85,9 +85,9 @@
     const user = API.getUser();
     const firstName = user?.name ? user.name.trim().split(/\s+/)[0] : "there";
 
-    setText("dash-greeting",   getGreeting() + ",");
-    setText("dash-user-name",  firstName + "!");
-  }
+    
+   
+  
 
   // ─────────────────────────────────────────
   // 2. Search bar
