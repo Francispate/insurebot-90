@@ -7,7 +7,7 @@
 /* ── Wrapper ── */
 .chat-widget-wrap {
   position: fixed;
-  bottom: 1.5rem;
+  bottom: 4.5rem; /* raised from 1.5rem so it clears the Netlify badge */
   right: 1.5rem;
   z-index: 9999;
   display: flex;
@@ -482,7 +482,7 @@ code.chat-md-code {
     border-bottom-right-radius: 0;
   }
   .chat-widget-wrap {
-    bottom: 0.5rem;
+    bottom: 3.5rem; /* raised from 0.5rem so it clears the Netlify badge on mobile too */
     right: 0.5rem;
   }
 }
