@@ -20,14 +20,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Model chain (4 models) ────────────────────────────────────────────────────
-# If a model is overloaded (503) all keys fail → moves to next model instantly
 MODEL_FALLBACK_CHAIN = [
-    os.getenv("GEMINI_MODEL", "gemini-3.6-flash"),  # primary (newest)
-    "gemini-2.5-flash",                              # fallback #1 (stable GA)
-    "gemini-2.5-flash-lite",                         # fallback #2 (stable, lighter)
-    "gemini-3.1-flash-lite",                         # fallback #3 (newest stable)
+    os.getenv("GEMINI_MODEL", "gemini-3.6-flash"),
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-3.1-flash-lite",
 ]
-# Remove duplicates while preserving order
 _seen_models: set = set()
 MODEL_FALLBACK_CHAIN = [
     m for m in MODEL_FALLBACK_CHAIN
@@ -36,7 +34,7 @@ MODEL_FALLBACK_CHAIN = [
 
 # ── Key pool (3 keys) ─────────────────────────────────────────────────────────
 _KEY_ENV_NAMES = ["GEMINI_KEY_1", "GEMINI_KEY_2", "GEMINI_KEY_3",
-                  "GOOGLE_AI_API_KEY"]   # legacy key picked up last
+                  "GOOGLE_AI_API_KEY"]
 
 GEMINI_KEYS: list[str] = []
 _seen_keys: set = set()
@@ -57,7 +55,7 @@ No explanation, no markdown, just raw JSON.
 
 JSON format:
 {
-  "claim_type": "car" or "house" or "health" or "business",
+  "claim_type": "car" or "two_wheeler" or "house" or "health" or "business" or "other",
   "damage_severity": "minor" or "moderate" or "severe" or "total_loss",
   "estimated_amount": "rupees X to Y",
   "affected_parts": ["part1", "part2", "part3"],
@@ -65,9 +63,17 @@ JSON format:
   "rejection_risks": ["risk1", "risk2"]
 }
 
-Rules:
+claim_type selection rules — follow these exactly:
+- "two_wheeler" → motorcycle, bike, scooter, moped, motorbike, or ANY two-wheeled vehicle
+- "car"         → car, SUV, truck, van, or any four-wheeled motor vehicle
+- "house"       → home, building, apartment, property damage
+- "health"      → bodily injury, medical, personal injury
+- "business"    → shop, office, commercial property or equipment
+- "other"       → anything that does not fit the above
+
+Other rules:
 - estimated_amount must use realistic Indian Rupee amounts
-- affected_parts: list the specific damaged areas visible
+- affected_parts: list the specific damaged areas visible in the image
 - documentation_needed: list documents required to file this claim in India
 - rejection_risks: list reasons this claim might be rejected
 """
@@ -93,7 +99,6 @@ def analyze_damage_image(image_bytes: bytes) -> dict:
 
     for model in MODEL_FALLBACK_CHAIN:
         print(f"[Vision AI] Trying model={model}")
-        all_keys_failed = True
 
         for key_idx, api_key in enumerate(GEMINI_KEYS, start=1):
             key_label = f"key #{key_idx}"
@@ -132,9 +137,9 @@ def analyze_damage_image(image_bytes: bytes) -> dict:
                       f"({'overload→next key' if retryable else 'hard error→next key'})")
                 continue
 
-        print(f"[Vision AI] All 3 keys failed for model={model} → trying next model")
+        print(f"[Vision AI] All keys failed for model={model} → trying next model")
 
-    print("[Vision AI] All 4 models × 3 keys exhausted – using fallback response")
+    print("[Vision AI] All models × keys exhausted – using fallback response")
     return _fallback_response()
 
 
